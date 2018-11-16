@@ -1,0 +1,609 @@
+# Mensagens em Ingles para o jogo Pescadores
+# Copyleft (C) 2018 Joao Vianna
+# Joao Vianna <jvianna@gmail.com>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Pescadores 0.90\n"
+"POT-Creation-Date: 2018-11-15 16:51+-02\n"
+"PO-Revision-Date: 2018-11-15 13:47+-02\n"
+"Last-Translator: Joao Vianna <jvianna@gmail.com>\n"
+"Language-Team: English <jvianna@gmail.com>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8 bits\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: pescadores.py:476
+msgid "rede"
+msgstr "net"
+
+#: pescadores.py:477
+msgid "ração"
+msgstr "meal"
+
+#: pescadores.py:478
+msgid "pescado"
+msgstr "fish"
+
+#: pescadores.py:479
+msgid "curso de nível 1"
+msgstr "level 1 course"
+
+#: pescadores.py:480
+msgid "curso de nível 2"
+msgstr "level 2 course"
+
+#: pescadores.py:481
+msgid "curso de nível 3"
+msgstr "level 2 course"
+
+#: pescadores.py:482
+msgid "barco simples"
+msgstr "simple boat"
+
+#: pescadores.py:483
+msgid "barco reforçado"
+msgstr "reinforced boat"
+
+#: pescadores.py:493 pescadores.py:1506
+msgid "reforçado"
+msgstr "reinforced"
+
+#: pescadores.py:496 pescadores.py:1506
+msgid "simples"
+msgstr "simple"
+
+#: pescadores.py:760
+msgid "Noroeste"
+msgstr "Northwest"
+
+#: pescadores.py:761
+msgid "Sudeste"
+msgstr "Southeast"
+
+#: pescadores.py:763
+msgid "Parati"
+msgstr "Parati"
+
+#: pescadores.py:763
+msgid "Vila de Parati, onde moram os pescadores"
+msgstr "Parati Village, where the fishermen live"
+
+#: pescadores.py:765
+msgid "Ilha do Algodão"
+msgstr "Cotton Island"
+
+#: pescadores.py:765
+msgid "Local abrigado, com pouco pescado"
+msgstr "Safe place, low in fish stocks"
+
+#: pescadores.py:767
+msgid "Lages do Pendão"
+msgstr "Lages do Pendão"
+
+#: pescadores.py:767
+msgid "Local com muito pescado, e ventos fortes"
+msgstr "Place with strong winds and lots of fish"
+
+#: pescadores.py:769
+msgid "Local perigoso, sujeito a tempestades"
+msgstr "Dangerous place, prone to storms"
+
+#: pescadores.py:769
+msgid "Ponta da Juatinga"
+msgstr "Ponta da Juatinga"
+
+#: pescadores.py:771
+msgid "Ilha Cairuçu"
+msgstr "Cairusu Island"
+
+#: pescadores.py:771
+msgid "Local seguro, e de boa pesca"
+msgstr "Safe place, with plenty of fish"
+
+#: pescadores.py:773
+msgid "Alto Mar"
+msgstr "Ocean"
+
+#: pescadores.py:773
+msgid "Local de perigos e pesca incertos"
+msgstr "Place with unknown perils and stock of fish"
+
+#: pescadores.py:791
+msgid "Ocorreu uma forte ventania ao sair das lages."
+msgstr "Strong winds ocurred leaving the fishing area"
+
+#: pescadores.py:791 pescadores.py:1220 pescadores.py:1244
+msgid "ventania"
+msgstr "strong winds"
+
+#: pescadores.py:793
+msgid "Ocorreu uma tempestade!"
+msgstr "A storm has ocurred"
+
+#: pescadores.py:793
+msgid "tempestade"
+msgstr "storm"
+
+#: pescadores.py:845
+msgid "Vocês são pescadores da colônia de pesca de Paraty."
+msgstr "You are fishermen at the Paraty fisherman's warf."
+
+#: pescadores.py:846
+msgid "Esta é uma vila tranquila, no sul do Estado do Rio de Janeiro."
+msgstr ""
+"This is a quiet village, in the southwest coast of Rio de Janeiro State."
+
+#: pescadores.py:847
+msgid ""
+"O pescado é farto, mas nos pontos onde há mais peixes também há perigos no "
+"mar."
+msgstr ""
+"There is plenty of fish, but where fishing is best, there are also perils in "
+"the sea."
+
+#: pescadores.py:848
+msgid ""
+"Nos pontos onde a pesca é mais frequente, é preciso evitar a sobre-pesca, "
+"garantindo que os peixes se reproduzam."
+msgstr ""
+"Where fishing is more intense, it is important to avoid overfishing, to make "
+"sure that fish can reproduce."
+
+#: pescadores.py:850
+msgid ""
+"O dia a dia consiste em preparar os barcos para a pesca e sair para o mar."
+msgstr ""
+"Daily life consists of preparing the boats for fishing and going out to sea."
+
+#: pescadores.py:851
+msgid ""
+"Para os pontos mais distantes, ou se a pesca for pouca, o barco pode ficar "
+"vários dias no mar."
+msgstr ""
+"To reach distant fishing points, or if fishing is not producing good "
+"results, it may be necessary to stay many days at sea."
+
+#: pescadores.py:852
+msgid ""
+"Na volta, o peixe é vendido no mercado, e o dinheiro arrecadado pode ser "
+"usado para comprar rações, equipamentos ou fazer cursos de aprimoramento."
+msgstr ""
+"When the boats return to the harbor, fish is sold in the market, and the "
+"money can be used to buy meals, equipment, or to pay for fishing or sailing "
+"lessons."
+
+#: pescadores.py:896
+msgid "Começa um novo dia na vila."
+msgstr "A new day starts in the village."
+
+#: pescadores.py:903
+msgid "Preços no mercado de %s:\n"
+msgstr "Prices in the %s market:\n"
+
+#: pescadores.py:905
+msgid "%s: R$%d,00\n"
+msgstr "%s: US$%d.00\n"
+
+#: pescadores.py:917
+msgid "%s ficou sem ração, e foi resgatado até o porto."
+msgstr "%s got short in meals and was brought back to the harbor."
+
+#: pescadores.py:926
+msgid "Barco %s ficou sem tripulação, e foi rebocado até o porto."
+msgstr "Boat %s got empty and was toed back to the harbor."
+
+#: pescadores.py:937
+msgid "%s ficou sem ração, e teve que comprar uma ao preço do dia."
+msgstr "%s got short in meals, and had to buy one for the price of the day."
+
+#: pescadores.py:986 pescadores.py:1019 pescadores.py:1059 pescadores.py:1671
+#: pescadores.py:2095 pescadores.py:2149 pescadores.py:2178
+msgid "barco"
+msgstr "boat"
+
+#: pescadores.py:995 pescadores.py:1031 pescadores.py:1063 pescadores.py:1064
+#: pescadores.py:1680 pescadores.py:2098
+msgid "curso"
+msgstr "course"
+
+#: pescadores.py:996 pescadores.py:1032 pescadores.py:1063 pescadores.py:1507
+msgid "navegação"
+msgstr "sailing"
+
+#: pescadores.py:998 pescadores.py:1034 pescadores.py:1064 pescadores.py:1507
+msgid "pesca"
+msgstr "fishing"
+
+#: pescadores.py:1000 pescadores.py:1036 pescadores.py:1055 pescadores.py:1674
+#: pescadores.py:2089
+msgid "rações"
+msgstr "meals"
+
+#: pescadores.py:1002 pescadores.py:1038 pescadores.py:1061 pescadores.py:1677
+#: pescadores.py:2089
+msgid "redes"
+msgstr "nets"
+
+#: pescadores.py:1005
+msgid "Jogo::atenda_pescador() - Pedido inválido: "
+msgstr "Jogo::atenda_pescador() - Invalid order: "
+
+#: pescadores.py:1040 pescadores.py:1056 pescadores.py:2092
+msgid "dinheiro"
+msgstr "money"
+
+#: pescadores.py:1043
+msgid "Jogo::bonifique_pescador() - Bem inválido: "
+msgstr "Jogo::bonifique_pescador() - Invalid asset: "
+
+#: pescadores.py:1077
+msgid "posição"
+msgstr "position"
+
+#: pescadores.py:1080
+msgid "coordenadas"
+msgstr "coordinates"
+
+#: pescadores.py:1082
+msgid "capacidade restante"
+msgstr "remaining capacity"
+
+#: pescadores.py:1085
+msgid "pescador"
+msgstr "fisherman"
+
+#: pescadores.py:1131
+msgid "Vagas esgotadas no barco %s."
+msgstr "No more places on boat %s."
+
+#: pescadores.py:1135
+msgid "Embarcando %s no barco %s."
+msgstr "Embarking %s in %s."
+
+#: pescadores.py:1156
+msgid "%s recebeu R$%d,00 para trabalhar em %s."
+msgstr "%s got US$%d.00 to work in %s."
+
+#: pescadores.py:1177 pescadores.py:1299
+msgid "descontar atraso"
+msgstr "discount delay"
+
+#: pescadores.py:1182 pescadores.py:1266
+msgid "pescar"
+msgstr "fish"
+
+#: pescadores.py:1184
+msgid "navegar para %s"
+msgstr "sail to %s"
+
+#: pescadores.py:1200
+msgid "navegar para "
+msgstr "sail to "
+
+#: pescadores.py:1205
+msgid "Barco %s navegando de %s a %s."
+msgstr "Boat %s sailing from %s to %s."
+
+#: pescadores.py:1222
+msgid "Barco %s se atrasou 2 dias para chegar a %s por causa de uma ventania."
+msgstr "Boat %s is 2 days late going to %s because of strong winds."
+
+#: pescadores.py:1227
+msgid "Barco %s naufragou perto de %s."
+msgstr "Boat %s sunk near %s."
+
+#: pescadores.py:1233
+msgid "%s foi resgatado e está de volta a %s."
+msgstr "%s was brought back to %s."
+
+#: pescadores.py:1246
+msgid "Barco %s se atrasou 1 dia para chegar a %s por causa de uma ventania."
+msgstr "Boat %s is 1 day late going to %s because of strong winds."
+
+#: pescadores.py:1251
+msgid "Barco %s perdeu parte da carga por causa de uma tempestade."
+msgstr "Boat %s lost part of its load because of a storm."
+
+#: pescadores.py:1268
+msgid "Barco %s pescando em %s."
+msgstr "Boat %s fishing in %s."
+
+#: pescadores.py:1287
+msgid "Barco %s perdeu uma rede em %s."
+msgstr "Boat %s lost one net in %s."
+
+#: pescadores.py:1291
+msgid "Rede do barco %s voltou vazia em %s."
+msgstr "Boat %s got one empty net in %s."
+
+#: pescadores.py:1294
+msgid "Barco %s pescou %d quilos de peixe em %s."
+msgstr "Boat %s got %d quilograms of fish in %s."
+
+#: pescadores.py:1302
+msgid "Barco %s atrasado para chegar a %s."
+msgstr "Boat %s is late to get to %s."
+
+#: pescadores.py:1307
+msgid "Jornada desconhecida para barco %s: %s"
+msgstr "Unknown journey for boat %s: %s."
+
+#: pescadores.py:1312
+msgid "#coord:barco=%s;x=%d;y=%d"
+msgstr "#coord:boat=%s;x=%d;y=%d"
+
+#: pescadores.py:1315
+msgid "Barco %s chegou em %s."
+msgstr "Boat %s got to %s."
+
+#: pescadores.py:1329
+msgid "Barco %s vendeu pescado no valor de $R%d,00."
+msgstr "Boat %s sold fish for US$%d.00."
+
+#: pescadores.py:1340
+msgid ""
+"\n"
+"Rações restantes: "
+msgstr ""
+"\n"
+"Remaining meals: "
+
+#: pescadores.py:1342
+msgid "%s tem %d, "
+msgstr "%s got %d, "
+
+#: pescadores.py:1365
+msgid "Valor não numérico: "
+msgstr "Non numeric value: "
+
+#: pescadores.py:1369
+msgid "Valor inválido: "
+msgstr "Invalid value: "
+
+#: pescadores.py:1378
+msgid "Pescadores"
+msgstr "Fishermen"
+
+#: pescadores.py:1379
+msgid ""
+"João Vianna <jvianna@gmail.com> e\n"
+" Ivan Wermelinger"
+msgstr ""
+"Joao Vianna <jvianna@gmail.com> and\n"
+" Ivan Wermelinger"
+
+#: pescadores.py:1388
+msgid ""
+"\n"
+"Autor: "
+msgstr ""
+"\n"
+"Author: "
+
+#: pescadores.py:1388
+msgid ""
+"\n"
+"Versão "
+msgstr ""
+"\n"
+"Version "
+
+#: pescadores.py:1389
+msgid "Sobre Pescadores"
+msgstr "About Fishermen"
+
+#: pescadores.py:1433
+msgid "Pescadores - Participantes"
+msgstr "Fishermen - Players"
+
+#: pescadores.py:1438
+msgid "Diga o nome dos pescadores separados por vírgula:"
+msgstr "Type the player names separated by commas: "
+
+#: pescadores.py:1456 pescadores.py:1633 pescadores.py:1750 pescadores.py:1837
+#: pescadores.py:1972
+msgid "Ok"
+msgstr "Ok"
+
+#: pescadores.py:1461 pescadores.py:1638 pescadores.py:1755 pescadores.py:1842
+#: pescadores.py:1977
+msgid "Cancelar"
+msgstr "Cancel"
+
+#: pescadores.py:1506 pescadores.py:1507 pescadores.py:1587 pescadores.py:1629
+#: pescadores.py:1670 pescadores.py:1679 pescadores.py:1892 pescadores.py:1893
+#: pescadores.py:1921 pescadores.py:1940 pescadores.py:2002
+msgid "nenhum"
+msgstr "none"
+
+#: pescadores.py:1524
+msgid "Pescadores - Mercado"
+msgstr "Fishermen - Market"
+
+#: pescadores.py:1531
+msgid "%s, você tem "
+msgstr "%s, you got "
+
+#: pescadores.py:1537 pescadores.py:2094
+msgid "R$%d,00"
+msgstr "US$%d.00"
+
+#: pescadores.py:1545
+msgid "e %d rações"
+msgstr "and %d meals."
+
+#: pescadores.py:1554
+msgid "O que você quer comprar?"
+msgstr "What do you want to buy?"
+
+#: pescadores.py:1561
+msgid "Rações (Você só pode manter 12!):"
+msgstr "Meals (You can only keep 12!):"
+
+#: pescadores.py:1577
+msgid "Barco:"
+msgstr "Boat:"
+
+#: pescadores.py:1592
+msgid "Nome do barco:"
+msgstr "Boat name:"
+
+#: pescadores.py:1605
+msgid "Redes:"
+msgstr "Nets:"
+
+#: pescadores.py:1619
+msgid "Curso:"
+msgstr "Course:"
+
+#: pescadores.py:1709
+msgid "Pescadores - Embarque"
+msgstr "Fishermen - Embarking"
+
+#: pescadores.py:1714
+msgid "O Barco %s tem %d vagas."
+msgstr "Boat %s has %d places."
+
+#: pescadores.py:1723
+msgid "Escolha a tripulação."
+msgstr "Choose the tripulation."
+
+#: pescadores.py:1732
+msgid "Pescadores:"
+msgstr "Fishermen:"
+
+#: pescadores.py:1804
+msgid "Pescadores - Jornada"
+msgstr "Fishermen - Journey"
+
+#: pescadores.py:1809
+msgid "Decida a jornada do Barco %s."
+msgstr "Choose the journey for boat %s"
+
+#: pescadores.py:1817
+msgid "Jornadas:"
+msgstr "Journeys:"
+
+#: pescadores.py:1896
+msgid "%s: R$%d,00"
+msgstr "%s: US$%d.00"
+
+#: pescadores.py:1900
+msgid "Pescadores - Transferências"
+msgstr "Fishermen - Transfers"
+
+#: pescadores.py:1907
+msgid "Escolha o pescador a debitar:"
+msgstr "Choose the fisherman to be charged:"
+
+#: pescadores.py:1926
+msgid "Escolha o pescador a creditar:"
+msgstr "Choose the fisherman to get credit:"
+
+#: pescadores.py:1945
+msgid "Valor a transferir:"
+msgstr "Value to transfer:"
+
+#: pescadores.py:1959
+msgid "Contrato Realizado:"
+msgstr "Contract between parts:"
+
+#: pescadores.py:2007
+msgid ""
+"Pagamento de  %s a %s no valor de R$ %d,00 por:\n"
+"%s"
+msgstr ""
+"Payment from %s to %s of US$%d.00 for:\n"
+"%s"
+
+#: pescadores.py:2031
+msgid "Pescadores - Jornal"
+msgstr "Fishermen - Journal"
+
+#: pescadores.py:2063 pescadores.py:2183
+msgid "Esta é uma boa hora para fazer negócios."
+msgstr "This is a good time do do business."
+
+#: pescadores.py:2067
+msgid "Pescadores - Nomes"
+msgstr "Fishermen - Players"
+
+#: pescadores.py:2068
+msgid "Parece que não há nenhum pescador no jogo. Tente incluir algum."
+msgstr ""
+"It looks like there is no fisherman in the game. Please include at least one."
+
+#: pescadores.py:2086
+msgid ""
+"\n"
+"%s tem os seguintes bens:"
+msgstr ""
+"\n"
+"%s has the following assets:"
+
+#: pescadores.py:2097
+msgid "Um %s %s de nome %s"
+msgstr "A %s of type %s named %s"
+
+#: pescadores.py:2100
+msgid "Proficiência %d em %s"
+msgstr "Proficiency level %d in %s"
+
+#: pescadores.py:2132
+msgid ""
+"\n"
+"Estado do barco %s:"
+msgstr ""
+"\n"
+"Boat %s status:"
+
+#: pescadores.py:2159
+msgid "barco="
+msgstr "boat="
+
+#: pescadores.py:2162
+msgid "x="
+msgstr "x="
+
+#: pescadores.py:2164
+msgid "y="
+msgstr "y="
+
+#: pescadores.py:2187
+msgid "Pescadores - Erro"
+msgstr "Fishermen - Error"
+
+#: pescadores.py:2188
+msgid "Estado inválido: "
+msgstr "Invalid state: "
+
+#: pescadores.py:2205
+msgid "Uso: python pescadores.py\n"
+msgstr "Usage: python pescadores.py\n"
+
+#: pescadores.py:2238
+msgid "Jogo"
+msgstr "Game"
+
+#: pescadores.py:2240
+msgid "Avançar"
+msgstr "Avançar"
+
+#: pescadores.py:2242
+msgid "Transferir fundos ..."
+msgstr "Transfer funds ..."
+
+#: pescadores.py:2243
+msgid "Terminar"
+msgstr "End"
+
+#: pescadores.py:2246
+msgid "Ajuda"
+msgstr "Help"
+
+#: pescadores.py:2248
+msgid "Sobre o Jogo"
+msgstr "About the game"

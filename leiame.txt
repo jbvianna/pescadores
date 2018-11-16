@@ -1,0 +1,22 @@
+Pescadores é um jogo do tipo simulação, ambientado em uma vila de pescadores.
+
+Instalação:
+
+Escolha uma pasta no seu computador onde será instalado o produto. Copie para esta pasta o arquivo .zip fornecido com a distribuição, e descompacte nesta pasta. Será criada uma nova pasta chamada pescadores_nnn, onde nnn é o número da versão do produto. Consulte o manual - pescadores_manual.html - para completar a instalação e para entender como utilizar o produto.
+
+Sobre o licenciamento deste produto, leia o arquivo COPIANDO.
+
+Histórico:
+
+Versão 0.8 - 2018-10-30
+  Funcionalidade básica implementada, com interface através de menu e diálogos.
+
+  Problemas conhecidos: Quando ocorre dano grave na pesca, não está suprimindo redes dos pescadores.
+  O programa não foi completamente testado.
+
+Versão 0.9 - 2018-11-15
+  Internacionalização, com tradução para o Inglês,
+  Manual de uso,
+  Mapa na tela principal,
+  Painel com Jornal Diário.
+

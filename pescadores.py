@@ -743,8 +743,8 @@ class Mapa:
     se = self._se.coordenadas()
     coord = posicao.coordenadas()
     
-    x = int(((coord[1] - nw[1]) / (se[1] - nw[1])) * self._largura)
-    y = int(((nw[0] - coord[0]) / (nw[0] - se[0])) * self._altura)
+    x = int(((coord[0] - se[0]) / (nw[0] - se[0])) * self._largura)
+    y = int(((nw[1] - coord[1]) / (nw[1] - se[1])) * self._altura)
     return (x, y)
 
   def preencha_mapa(self):
@@ -759,21 +759,23 @@ class Mapa:
     self._largura = 1280
     self._altura = 720
     
-    self._nw = Posicao(u'NW', _(u'Noroeste'), -23.166469,-44.789863)
-    self._se = Posicao(u'SE', _(u'Sudeste'), -23.424420,-44.364462)
+    self._nw = Posicao(u'NW', _(u'Noroeste'),-44.345662, -23.165140)
+    self._se = Posicao(u'SE', _(u'Sudeste'),-44.783512, -23.399335)
     
     parati = Posicao(_(u'Parati'), _(u'Vila de Parati, onde moram os pescadores'),
-                     -23.213494,-44.718944)
+                      -44.718944, -23.213494)
     algodao = Posicao(_(u'Ilha do Algodão'), _(u'Local abrigado, com pouco pescado'),
-                      -23.231164,-44.605027)
-    pendao = Posicao(_(u'Lages do Pendão'), _(u'Local com muito pescado, e ventos fortes'),
-                     -23.181905,-44.393564)
-    juatinga = Posicao(_(u'Ponta da Juatinga'), _(u'Local perigoso, sujeito a tempestades'),
-                       -23.293606,-44.462170)
+                      -44.593240, -23.225626)
+    pendao = Posicao(_(u'Lages do Pendão'),
+                     _(u'Local com muito pescado, e ventos fortes'),
+                      -44.401589, -23.180241)
+    juatinga = Posicao(_(u'Ponta da Juatinga'),
+                       _(u'Local perigoso, sujeito a tempestades'),
+                       -44.469046, -23.293542)
     cairucu = Posicao(_(u'Ilha Cairuçu'), _(u'Local seguro, e de boa pesca'),
-                      -23.337682,-44.554208)
+                       -44.561544, -23.343153)
     alto_mar = Posicao(_(u'Alto Mar'), _(u'Local de perigos e pesca incertos'),
-                       -23.381562,-44.400722)
+                       -44.393881, -23.346023)
     
     parati.adicione_adjacencia(algodao)
     algodao.adicione_adjacencia(parati)

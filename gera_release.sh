@@ -17,21 +17,11 @@ cp gera_release.sh $1
 # cp roda_testes.sh $1
 # cp roda_testes.bat $1
 cp program_index.html $1
+cp -r locales $1/
 cd $1
 # Gerando documentação para desenvolvedores
 pydoc -w ./
 # Limpando arquivos temporários
 rm *.pyc
-cd ..
-# Arquivos para internacionalização
-mkdir -p $1/locales/en/LC_MESSAGES
-mkdir -p $1/locales/pt/LC_MESSAGES
-pygettext -d pescadores -o $1/locales/pescadores.pot pescadores.py
-cp locales/en/LC_MESSAGES/pescadores.po $1/locales/en/LC_MESSAGES/pescadores.po
-cp locales/pt/LC_MESSAGES/pescadores.po $1/locales/pt/LC_MESSAGES/pescadores.po
-msgmerge -U $1/locales/pescadores.pot $1/locales/en/LC_MESSAGES/pescadores.po
-msgmerge -U $1/locales/pescadores.pot $1/locales/pt/LC_MESSAGES/pescadores.po
-msgfmt $1/locales/en/LC_MESSAGES/pescadores.po -o $1/locales/en/LC_MESSAGES/pescadores.mo
-msgfmt $1/locales/pt/LC_MESSAGES/pescadores.po -o $1/locales/pt/LC_MESSAGES/pescadores.mo
 
 

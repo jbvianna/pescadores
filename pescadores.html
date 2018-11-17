@@ -9,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>pescadores</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/joao/Documents/educar/pescadores/pescadores_090/pescadores.py">/home/joao/Documents/educar/pescadores/pescadores_090/pescadores.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/joao/Documents/src/python/pescadores/pescadores_092/pescadores.py">/home/joao/Documents/src/python/pescadores/pescadores_092/pescadores.py</a></font></td></tr></table>
     <p><tt>Pescadores&nbsp;-&nbsp;<a href="#Jogo">Jogo</a>&nbsp;de&nbsp;simulação&nbsp;situado&nbsp;em&nbsp;uma&nbsp;colônia&nbsp;de&nbsp;pescadores.<br>
 &nbsp;<br>
 Copyleft&nbsp;2018&nbsp;João&nbsp;Vianna&nbsp;(jvianna@gmail.com)&nbsp;e&nbsp;Ivan&nbsp;Wermelinger<br>
@@ -169,7 +169,11 @@ Returns:<br>
 <font color="#000000" face="helvetica, arial"><a name="Jogo">class <strong>Jogo</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Console&nbsp;do&nbsp;jogo,&nbsp;que&nbsp;controla&nbsp;as&nbsp;sequências&nbsp;de&nbsp;ações.<br>
+<td colspan=2><tt>Mediador&nbsp;do&nbsp;jogo,&nbsp;que&nbsp;controla&nbsp;as&nbsp;sequências&nbsp;de&nbsp;ações&nbsp;entre&nbsp;as&nbsp;classes&nbsp;internas.<br>
+&nbsp;<br>
+Esta&nbsp;classe&nbsp;esconde&nbsp;o&nbsp;modelo&nbsp;interno&nbsp;de&nbsp;implementação&nbsp;do&nbsp;jogo,&nbsp;apresentando<br>
+um&nbsp;protocolo&nbsp;com&nbsp;métodos&nbsp;que&nbsp;podem&nbsp;ser&nbsp;utilizados&nbsp;por&nbsp;diversas<br>
+interfaces&nbsp;homem-máquina&nbsp;para&nbsp;apresentar&nbsp;o&nbsp;jogo&nbsp;ao&nbsp;usuário.<br>
 &nbsp;<br>
 Attributes:<br>
 &nbsp;&nbsp;mapa&nbsp;-&nbsp;Dicionário&nbsp;com&nbsp;posições&nbsp;interconectadas<br>
@@ -184,6 +188,8 @@ Attributes:<br>
 
 <dl><dt><a name="Jogo-adicione_jornada"><strong>adicione_jornada</strong></a>(self, nome_barco, jornada)</dt><dd><tt>Define&nbsp;jornada&nbsp;para&nbsp;um&nbsp;barco<br>
 &nbsp;<br>
+As&nbsp;jornadas&nbsp;podem&nbsp;ser&nbsp;pescar,&nbsp;descontar&nbsp;atraso&nbsp;ou&nbsp;navegar&nbsp;para&nbsp;um&nbsp;destino.<br>
+&nbsp;<br>
 Attributes:<br>
 &nbsp;&nbsp;nome_barco:&nbsp;str&nbsp;-&nbsp;O&nbsp;barco<br>
 &nbsp;&nbsp;jornada:&nbsp;str&nbsp;-&nbsp;Indica&nbsp;o&nbsp;que&nbsp;o&nbsp;barco&nbsp;irá&nbsp;fazer</tt></dd></dl>
@@ -191,24 +197,25 @@ Attributes:<br>
 <dl><dt><a name="Jogo-adicione_pescadores"><strong>adicione_pescadores</strong></a>(self, nomes)</dt><dd><tt>Adiciona&nbsp;jogadores&nbsp;ao&nbsp;jogo.<br>
 &nbsp;<br>
 Notes:<br>
-&nbsp;&nbsp;Cada&nbsp;pescador&nbsp;inicia&nbsp;o&nbsp;jogo&nbsp;no&nbsp;porto&nbsp;principal,<br>
-&nbsp;&nbsp;com&nbsp;R$2.000,00&nbsp;e&nbsp;ração&nbsp;para&nbsp;1&nbsp;dia.<br>
+&nbsp;&nbsp;Cada&nbsp;pescador&nbsp;inicia&nbsp;o&nbsp;jogo&nbsp;no&nbsp;porto&nbsp;principal,&nbsp;com&nbsp;R$2.000,00&nbsp;e<br>
+&nbsp;&nbsp;ração&nbsp;para&nbsp;1&nbsp;dia.<br>
 Attributes:<br>
 &nbsp;&nbsp;nomes:&nbsp;[str,&nbsp;...]&nbsp;-&nbsp;Nomes&nbsp;dos&nbsp;jogadores/pescadores</tt></dd></dl>
 
-<dl><dt><a name="Jogo-arquivo_imagem"><strong>arquivo_imagem</strong></a>(self)</dt></dl>
+<dl><dt><a name="Jogo-arquivo_imagem"><strong>arquivo_imagem</strong></a>(self)</dt><dd><tt>Retorna&nbsp;nome&nbsp;do&nbsp;arquivo&nbsp;com&nbsp;imagem&nbsp;do&nbsp;mapa.</tt></dd></dl>
 
 <dl><dt><a name="Jogo-atenda_pescador"><strong>atenda_pescador</strong></a>(self, nome, pedidos)</dt><dd><tt>Atende&nbsp;aos&nbsp;pedidos&nbsp;de&nbsp;compras&nbsp;de&nbsp;um&nbsp;pescador.<br>
 &nbsp;<br>
 Attributes:<br>
 &nbsp;&nbsp;nome:&nbsp;str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador<br>
-&nbsp;&nbsp;pedidos:&nbsp;[(tipo_de_pedido,&nbsp;detalhe,&nbsp;...),&nbsp;...]<br>
+&nbsp;&nbsp;pedidos:&nbsp;[(tipo_de_pedido:&nbsp;str,&nbsp;detalhe,&nbsp;...),&nbsp;...]<br>
 &nbsp;&nbsp;<br>
 Notes:<br>
 &nbsp;&nbsp;Para&nbsp;as&nbsp;rotinas&nbsp;que&nbsp;se&nbsp;seguem,&nbsp;envolvendo&nbsp;transações&nbsp;com&nbsp;bens,<br>
-&nbsp;&nbsp;As&nbsp;listas&nbsp;de&nbsp;bens/pedidos&nbsp;contêm&nbsp;tuplas,<br>
-&nbsp;&nbsp;em&nbsp;que&nbsp;o&nbsp;primeiro&nbsp;elemento&nbsp;é&nbsp;o&nbsp;tipo&nbsp;de&nbsp;bem&nbsp;(barco,&nbsp;rações,&nbsp;etc)<br>
-&nbsp;&nbsp;e&nbsp;os&nbsp;demais&nbsp;sãos&nbsp;detalhes,&nbsp;como&nbsp;quantidade,&nbsp;etc.</tt></dd></dl>
+&nbsp;&nbsp;As&nbsp;listas&nbsp;de&nbsp;bens/pedidos&nbsp;contêm&nbsp;tuplas,&nbsp;em&nbsp;que<br>
+&nbsp;&nbsp;o&nbsp;primeiro&nbsp;elemento&nbsp;é&nbsp;o&nbsp;tipo&nbsp;de&nbsp;bem&nbsp;(barco,&nbsp;rações,&nbsp;etc)&nbsp;e<br>
+&nbsp;&nbsp;os&nbsp;demais&nbsp;são&nbsp;detalhes,&nbsp;como&nbsp;quantidade,&nbsp;etc.<br>
+&nbsp;&nbsp;Os&nbsp;tipos&nbsp;de&nbsp;bens&nbsp;incluem:&nbsp;barco,&nbsp;curso,&nbsp;rações,&nbsp;redes&nbsp;e&nbsp;dinheiro.</tt></dd></dl>
 
 <dl><dt><a name="Jogo-barcos_com_vaga"><strong>barcos_com_vaga</strong></a>(self)</dt><dd><tt>Retorna&nbsp;os&nbsp;barcos&nbsp;que&nbsp;têm&nbsp;vagas&nbsp;para&nbsp;pescadores.<br>
 &nbsp;<br>
@@ -217,33 +224,56 @@ Returns:<br>
 
 <dl><dt><a name="Jogo-bonifique_pescador"><strong>bonifique_pescador</strong></a>(self, nome, bens)</dt><dd><tt>Bonifica&nbsp;pescador&nbsp;com&nbsp;bens.<br>
 &nbsp;<br>
+Este&nbsp;método&nbsp;pode&nbsp;ser&nbsp;utilizado&nbsp;ao&nbsp;se&nbsp;implementar&nbsp;operações&nbsp;para<br>
+o&nbsp;mestre&nbsp;do&nbsp;jogo,&nbsp;que&nbsp;seria&nbsp;capaz&nbsp;de&nbsp;bonificar&nbsp;ou&nbsp;penalizar&nbsp;outros&nbsp;jogadores.<br>
+&nbsp;<br>
 Attributes:<br>
 &nbsp;&nbsp;nome:&nbsp;str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador<br>
-&nbsp;&nbsp;bens:&nbsp;[(tipo_de_bem,&nbsp;detalhe,&nbsp;...),&nbsp;...]</tt></dd></dl>
+&nbsp;&nbsp;bens:&nbsp;[(tipo_de_bem:&nbsp;str,&nbsp;detalhe,&nbsp;...),&nbsp;...]</tt></dd></dl>
 
-<dl><dt><a name="Jogo-credite_jornadas"><strong>credite_jornadas</strong></a>(self)</dt><dd><tt>Creditar&nbsp;valor&nbsp;de&nbsp;uma&nbsp;jornada&nbsp;para&nbsp;cada&nbsp;pescador&nbsp;em&nbsp;terra.</tt></dd></dl>
+<dl><dt><a name="Jogo-credite_jornadas"><strong>credite_jornadas</strong></a>(self)</dt><dd><tt>Creditar&nbsp;valor&nbsp;de&nbsp;uma&nbsp;jornada&nbsp;para&nbsp;cada&nbsp;pescador&nbsp;em&nbsp;terra.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:str,&nbsp;...]&nbsp;-&nbsp;Mensagens&nbsp;descrevendo&nbsp;as&nbsp;operações&nbsp;realizadas.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-destrua_rede"><strong>destrua_rede</strong></a>(self, nome_barco)</dt></dl>
+<dl><dt><a name="Jogo-destrua_rede"><strong>destrua_rede</strong></a>(self, nome_barco)</dt><dd><tt>Remover&nbsp;a&nbsp;rede&nbsp;de&nbsp;algum&nbsp;pescador&nbsp;do&nbsp;barco&nbsp;indicado.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;nome_barco:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;barco&nbsp;a&nbsp;penalizar.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-dimensoes_imagem"><strong>dimensoes_imagem</strong></a>(self)</dt></dl>
+<dl><dt><a name="Jogo-dimensoes_imagem"><strong>dimensoes_imagem</strong></a>(self)</dt><dd><tt>Retorna&nbsp;dimensões&nbsp;do&nbsp;mapa&nbsp;(largura,&nbsp;altura)&nbsp;em&nbsp;pixels.</tt></dd></dl>
 
 <dl><dt><a name="Jogo-embarque"><strong>embarque</strong></a>(self, nome_barco, nomes_pescadores)</dt><dd><tt>Embarca&nbsp;pescadores&nbsp;em&nbsp;um&nbsp;barco<br>
 &nbsp;<br>
 Attributes:<br>
 &nbsp;&nbsp;nome_barco:&nbsp;str&nbsp;-&nbsp;O&nbsp;barco<br>
-&nbsp;&nbsp;nomes_pescadores:&nbsp;[nome:str,&nbsp;...]&nbsp;-&nbsp;Pescadores&nbsp;a&nbsp;embarcar</tt></dd></dl>
+&nbsp;&nbsp;nomes_pescadores:&nbsp;[nome:str,&nbsp;...]&nbsp;-&nbsp;Pescadores&nbsp;a&nbsp;embarcar<br>
+&nbsp;&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:str,&nbsp;...]&nbsp;-&nbsp;Mensagens&nbsp;relativas&nbsp;às&nbsp;operações&nbsp;realizadas.</tt></dd></dl>
 
 <dl><dt><a name="Jogo-estado_barco"><strong>estado_barco</strong></a>(self, nome_barco)</dt><dd><tt>Retorna&nbsp;estado&nbsp;de&nbsp;um&nbsp;barco.<br>
 &nbsp;<br>
+Os&nbsp;dados&nbsp;retornados&nbsp;são&nbsp;aqueles&nbsp;que&nbsp;variam&nbsp;a&nbsp;cada&nbsp;jornada,<br>
+e&nbsp;podem&nbsp;ser&nbsp;utilizadas&nbsp;para&nbsp;se&nbsp;tomar&nbsp;decisões&nbsp;sobre&nbsp;a&nbsp;jornada&nbsp;seguinte:<br>
+posição,&nbsp;coordenadas&nbsp;correspondentes,&nbsp;carga&nbsp;que&nbsp;ainda&nbsp;cabe&nbsp;no&nbsp;barco,<br>
+pescadores&nbsp;embarcados&nbsp;e&nbsp;quantidade&nbsp;de&nbsp;redes&nbsp;em&nbsp;bom&nbsp;estado&nbsp;no&nbsp;barco.<br>
+&nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;[(característica,&nbsp;valor),&nbsp;...]</tt></dd></dl>
+&nbsp;&nbsp;[(caracteristica:str,&nbsp;valor),&nbsp;...]</tt></dd></dl>
 
-<dl><dt><a name="Jogo-execute_jornadas"><strong>execute_jornadas</strong></a>(self)</dt></dl>
+<dl><dt><a name="Jogo-execute_jornadas"><strong>execute_jornadas</strong></a>(self)</dt><dd><tt>Executa&nbsp;as&nbsp;jornadas&nbsp;pendentes&nbsp;para&nbsp;todos&nbsp;os&nbsp;barcos.<br>
+&nbsp;<br>
+As&nbsp;jornadas&nbsp;pendentes&nbsp;são&nbsp;as&nbsp;que&nbsp;foram&nbsp;incluídas&nbsp;através&nbsp;do&nbsp;método<br>
+<a href="#Jogo-adicione_jornada">adicione_jornada</a>().<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:str,&nbsp;...]&nbsp;-&nbsp;Lista&nbsp;de&nbsp;mensagens&nbsp;relativas&nbsp;às&nbsp;operações&nbsp;realizadas.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-extratos_pescadores"><strong>extratos_pescadores</strong></a>(self)</dt></dl>
+<dl><dt><a name="Jogo-extratos_pescadores"><strong>extratos_pescadores</strong></a>(self)</dt><dd><tt>Retorna&nbsp;dicionário&nbsp;com&nbsp;os&nbsp;saldos&nbsp;em&nbsp;dinheiro&nbsp;de&nbsp;cada&nbsp;pescador&nbsp;no&nbsp;jogo.</tt></dd></dl>
 
 <dl><dt><a name="Jogo-inventario_pescador"><strong>inventario_pescador</strong></a>(self, nome)</dt><dd><tt>Retorna&nbsp;bens&nbsp;de&nbsp;um&nbsp;pescador&nbsp;em&nbsp;formato&nbsp;semelhante<br>
-aos&nbsp;pedidos&nbsp;do&nbsp;método&nbsp;anterior.<br>
+aos&nbsp;pedidos&nbsp;do&nbsp;método&nbsp;<a href="#Jogo-atenda_pescador">atenda_pescador</a>().<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;bens:&nbsp;[(tipo_de_bem,&nbsp;detalhe,&nbsp;...),&nbsp;...]</tt></dd></dl>
@@ -251,22 +281,45 @@ Returns:<br>
 <dl><dt><a name="Jogo-mensagens_iniciais"><strong>mensagens_iniciais</strong></a>(self)</dt><dd><tt>Retorna&nbsp;lista&nbsp;de&nbsp;mensagens&nbsp;a&nbsp;serem&nbsp;apresentadas&nbsp;no&nbsp;início&nbsp;do&nbsp;jogo.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;[msg,&nbsp;...]&nbsp;-&nbsp;Mensagens&nbsp;de&nbsp;apresentação&nbsp;do&nbsp;jogo</tt></dd></dl>
+&nbsp;&nbsp;[msg:&nbsp;str,&nbsp;...]&nbsp;-&nbsp;Mensagens&nbsp;de&nbsp;apresentação&nbsp;do&nbsp;jogo</tt></dd></dl>
 
 <dl><dt><a name="Jogo-pescadores_nos_mercados"><strong>pescadores_nos_mercados</strong></a>(self)</dt><dd><tt>Devolve&nbsp;nomes&nbsp;dos&nbsp;pescadores&nbsp;que&nbsp;estão&nbsp;em&nbsp;algum&nbsp;porto&nbsp;com&nbsp;mercado.<br>
+&nbsp;<br>
+Estes&nbsp;pescadores&nbsp;poderão&nbsp;fazer&nbsp;compras&nbsp;para&nbsp;obter&nbsp;os&nbsp;equipamentos&nbsp;e<br>
+suprimentos&nbsp;necessários&nbsp;para&nbsp;sua&nbsp;jornada.<br>
+&nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;nomes[(str,&nbsp;int),&nbsp;...]&nbsp;-&nbsp;Nomes&nbsp;e&nbsp;saldos&nbsp;dos&nbsp;pescadores</tt></dd></dl>
 
-<dl><dt><a name="Jogo-pescadores_para_barco"><strong>pescadores_para_barco</strong></a>(self, nome_barco)</dt><dd><tt>Retorna&nbsp;os&nbsp;pescadores&nbsp;que&nbsp;podem&nbsp;embarcar&nbsp;em&nbsp;um&nbsp;dado&nbsp;barco.<br>
+<dl><dt><a name="Jogo-pescadores_para_barco"><strong>pescadores_para_barco</strong></a>(self, nome_barco)</dt><dd><tt>Retorna&nbsp;os&nbsp;pescadores&nbsp;que&nbsp;podem&nbsp;embarcar&nbsp;em&nbsp;um&nbsp;dado&nbsp;barco&nbsp;(no&nbsp;mesmo&nbsp;porto).<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;[nome_pescador:&nbsp;str,&nbsp;...]</tt></dd></dl>
 
-<dl><dt><a name="Jogo-prepare_alvorada"><strong>prepare_alvorada</strong></a>(self)</dt></dl>
+<dl><dt><a name="Jogo-prepare_alvorada"><strong>prepare_alvorada</strong></a>(self)</dt><dd><tt>Executa&nbsp;operações&nbsp;necessárias&nbsp;para&nbsp;preparar&nbsp;um&nbsp;novo&nbsp;dia&nbsp;do&nbsp;jogo.<br>
+&nbsp;<br>
+As&nbsp;operações&nbsp;incluem:&nbsp;Definir&nbsp;novos&nbsp;preços&nbsp;para&nbsp;cada&nbsp;mercado,<br>
+publicar&nbsp;tabelas&nbsp;de&nbsp;preços&nbsp;e&nbsp;descontar&nbsp;rações&nbsp;diárias&nbsp;dos&nbsp;pescadores.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:str,&nbsp;...]&nbsp;-&nbsp;Lista&nbsp;de&nbsp;mensagens&nbsp;geradas&nbsp;pelas&nbsp;operações.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-prepare_jornadas"><strong>prepare_jornadas</strong></a>(self)</dt><dd><tt>Preparar&nbsp;escolhas&nbsp;de&nbsp;jornada&nbsp;para&nbsp;cada&nbsp;barco&nbsp;tripulado.</tt></dd></dl>
+<dl><dt><a name="Jogo-prepare_jornadas"><strong>prepare_jornadas</strong></a>(self)</dt><dd><tt>Preparar&nbsp;escolhas&nbsp;de&nbsp;jornada&nbsp;para&nbsp;cada&nbsp;barco&nbsp;tripulado.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[(nome_barco:str,&nbsp;[jornada:str,&nbsp;...]),&nbsp;...]&nbsp;-&nbsp;Pares&nbsp;com&nbsp;nome&nbsp;do&nbsp;barco<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e&nbsp;lista&nbsp;de&nbsp;jornadas&nbsp;possíveis.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-transfira_valor"><strong>transfira_valor</strong></a>(self, nome_credito, nome_debito, valor, contrato)</dt></dl>
+<dl><dt><a name="Jogo-transfira_valor"><strong>transfira_valor</strong></a>(self, nome_credito, nome_debito, valor, contrato)</dt><dd><tt>Transfere&nbsp;valor&nbsp;em&nbsp;dinheiro&nbsp;de&nbsp;um&nbsp;pescador&nbsp;para&nbsp;outro,&nbsp;conforme&nbsp;contrato.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;nome_credito:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;que&nbsp;vai&nbsp;receber&nbsp;o&nbsp;valor.<br>
+&nbsp;&nbsp;nome_debito:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;a&nbsp;ser&nbsp;debitado.<br>
+&nbsp;&nbsp;valor:int&nbsp;-&nbsp;Valor&nbsp;a&nbsp;ser&nbsp;transferido.<br>
+&nbsp;&nbsp;contrato:str&nbsp;-&nbsp;Razão&nbsp;da&nbsp;transferência.<br>
+&nbsp;&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:str,&nbsp;...]&nbsp;-&nbsp;Mensagens&nbsp;relativas&nbsp;a&nbsp;operações&nbsp;realizadas.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -275,7 +328,16 @@ Returns:<br>
 <font color="#000000" face="helvetica, arial"><a name="Mapa">class <strong>Mapa</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Um&nbsp;mapa,&nbsp;com&nbsp;diversas&nbsp;posições&nbsp;e&nbsp;suas&nbsp;adjacências<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>Um&nbsp;mapa,&nbsp;com&nbsp;diversas&nbsp;posições&nbsp;e&nbsp;suas&nbsp;adjacências<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;arquivo&nbsp;imagem&nbsp;-&nbsp;Arquivo&nbsp;com&nbsp;a&nbsp;imagem&nbsp;correspondente&nbsp;ao&nbsp;mapa.<br>
+&nbsp;&nbsp;se/nw&nbsp;-&nbsp;Coordenadas&nbsp;correspondentes&nbsp;às&nbsp;extremidades&nbsp;do&nbsp;mapa.<br>
+&nbsp;&nbsp;largura/altura&nbsp;-&nbsp;Dimensões&nbsp;do&nbsp;mapa<br>
+&nbsp;&nbsp;porto&nbsp;principal&nbsp;-&nbsp;O&nbsp;porto&nbsp;de&nbsp;onde&nbsp;saem&nbsp;os&nbsp;barcos,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;no&nbsp;início&nbsp;do&nbsp;jogo,&nbsp;e&nbsp;para&nbsp;onde&nbsp;retornam&nbsp;os&nbsp;barcos&nbsp;e&nbsp;pescadores&nbsp;resgatados.<br>
+&nbsp;&nbsp;posicoes&nbsp;-&nbsp;lista&nbsp;de&nbsp;posições&nbsp;formando&nbsp;uma&nbsp;rede&nbsp;interligada<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;por&nbsp;rotas&nbsp;de&nbsp;navegação.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Mapa-__init__"><strong>__init__</strong></a>(self)</dt></dl>
@@ -287,7 +349,7 @@ Returns:<br>
 
 <dl><dt><a name="Mapa-arquivo_imagem"><strong>arquivo_imagem</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Mapa-dimensoes_imagem"><strong>dimensoes_imagem</strong></a>(self)</dt></dl>
+<dl><dt><a name="Mapa-dimensoes_imagem"><strong>dimensoes_imagem</strong></a>(self)</dt><dd><tt>Retorna&nbsp;dimensões&nbsp;(horizontal,&nbsp;vertical)&nbsp;da&nbsp;imagem.</tt></dd></dl>
 
 <dl><dt><a name="Mapa-porto_principal"><strong>porto_principal</strong></a>(self)</dt><dd><tt>Indica&nbsp;posição&nbsp;onde&nbsp;está&nbsp;o&nbsp;porto&nbsp;principal,&nbsp;com&nbsp;mercado.<br>
 &nbsp;<br>
@@ -299,7 +361,7 @@ Returns:<br>
 Returns:<br>
 &nbsp;&nbsp;[<a href="#Porto">Porto</a>,&nbsp;...]&nbsp;-&nbsp;Os&nbsp;portos&nbsp;encontrados&nbsp;no&nbsp;mapa</tt></dd></dl>
 
-<dl><dt><a name="Mapa-posicao_na_imagem"><strong>posicao_na_imagem</strong></a>(self, posicao)</dt></dl>
+<dl><dt><a name="Mapa-posicao_na_imagem"><strong>posicao_na_imagem</strong></a>(self, posicao)</dt><dd><tt>Mapeia&nbsp;coordenadas&nbsp;em&nbsp;graus&nbsp;e&nbsp;frações&nbsp;no&nbsp;mapa&nbsp;para&nbsp;coordenadas&nbsp;na&nbsp;tela.</tt></dd></dl>
 
 <dl><dt><a name="Mapa-preencha_mapa"><strong>preencha_mapa</strong></a>(self)</dt><dd><tt>Preenche&nbsp;o&nbsp;mapa&nbsp;com&nbsp;diversas&nbsp;posições&nbsp;interconectadas.<br>
 &nbsp;<br>
@@ -512,9 +574,9 @@ Returns:<br>
 
 <dl><dt><a name="Pescador-destreza_na_pesca"><strong>destreza_na_pesca</strong></a>(self)</dt><dd><tt>Indica&nbsp;o&nbsp;nível&nbsp;de&nbsp;destreza&nbsp;na&nbsp;pesca.<br>
 &nbsp;<br>
-&nbsp;Quanto&nbsp;maior,&nbsp;mais&nbsp;rende&nbsp;um&nbsp;lançamento&nbsp;da&nbsp;rede.<br>
 Returns:<br>
-&nbsp;&nbsp;int&nbsp;-&nbsp;Nível&nbsp;de&nbsp;destreza</tt></dd></dl>
+&nbsp;&nbsp;int&nbsp;-&nbsp;Nível&nbsp;de&nbsp;destreza<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quanto&nbsp;maior,&nbsp;mais&nbsp;rende&nbsp;um&nbsp;lançamento&nbsp;da&nbsp;rede.</tt></dd></dl>
 
 <dl><dt><a name="Pescador-nome"><strong>nome</strong></a>(self)</dt></dl>
 
@@ -525,7 +587,11 @@ Returns:<br>
 
 <dl><dt><a name="Pescador-remova_barco"><strong>remova_barco</strong></a>(self, barco)</dt><dd><tt>Remove&nbsp;barco&nbsp;do&nbsp;pescador.</tt></dd></dl>
 
-<dl><dt><a name="Pescador-remova_rede"><strong>remova_rede</strong></a>(self)</dt></dl>
+<dl><dt><a name="Pescador-remova_rede"><strong>remova_rede</strong></a>(self)</dt><dd><tt>Remove&nbsp;uma&nbsp;rede&nbsp;do&nbsp;pescador.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;-&nbsp;Se&nbsp;havia&nbsp;rede&nbsp;para&nbsp;remover.<br>
+&nbsp;&nbsp;False&nbsp;-&nbsp;Caso&nbsp;contrário.</tt></dd></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -596,17 +662,24 @@ Attributes:<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Posicao-__init__"><strong>__init__</strong></a>(self, nome, descr, coord_x, coord_y)</dt></dl>
 
-<dl><dt><a name="Posicao-adicione_adjacencia"><strong>adicione_adjacencia</strong></a>(self, pos)</dt></dl>
+<dl><dt><a name="Posicao-adicione_adjacencia"><strong>adicione_adjacencia</strong></a>(self, pos)</dt><dd><tt>Adiciona&nbsp;posição&nbsp;adjacente&nbsp;a&nbsp;esta&nbsp;em&nbsp;um&nbsp;mapa.</tt></dd></dl>
 
-<dl><dt><a name="Posicao-adjacencias"><strong>adjacencias</strong></a>(self)</dt></dl>
+<dl><dt><a name="Posicao-adjacencias"><strong>adjacencias</strong></a>(self)</dt><dd><tt>Retorna&nbsp;lista&nbsp;de&nbsp;posições&nbsp;adjacentes&nbsp;a&nbsp;esta&nbsp;em&nbsp;um&nbsp;mapa.</tt></dd></dl>
 
-<dl><dt><a name="Posicao-coordenadas"><strong>coordenadas</strong></a>(self)</dt></dl>
+<dl><dt><a name="Posicao-coordenadas"><strong>coordenadas</strong></a>(self)</dt><dd><tt>Indicas&nbsp;coordenadas&nbsp;da&nbsp;posição&nbsp;em&nbsp;um&nbsp;par&nbsp;ordenado:&nbsp;(longitude,&nbsp;latitude)<br>
+&nbsp;<br>
+Notes:<br>
+&nbsp;&nbsp;As&nbsp;coordenadas&nbsp;são&nbsp;dadas&nbsp;em&nbsp;graus&nbsp;e&nbsp;frações,&nbsp;relativas&nbsp;ao<br>
+&nbsp;&nbsp;Equador&nbsp;e&nbsp;ao&nbsp;Meridiano&nbsp;de&nbsp;Greenwich</tt></dd></dl>
 
-<dl><dt><a name="Posicao-crie_porto"><strong>crie_porto</strong></a>(self)</dt></dl>
+<dl><dt><a name="Posicao-crie_porto"><strong>crie_porto</strong></a>(self)</dt><dd><tt>Associa&nbsp;esta&nbsp;posição&nbsp;a&nbsp;um&nbsp;<a href="#Porto">Porto</a>,&nbsp;onde&nbsp;os&nbsp;barcos&nbsp;podem&nbsp;atracar.</tt></dd></dl>
 
-<dl><dt><a name="Posicao-defina_perigo"><strong>defina_perigo</strong></a>(self, perigo)</dt></dl>
+<dl><dt><a name="Posicao-defina_perigo"><strong>defina_perigo</strong></a>(self, perigo)</dt><dd><tt>Associa&nbsp;um&nbsp;perigo&nbsp;a&nbsp;esta&nbsp;posição.<br>
+&nbsp;<br>
+Notes:<br>
+&nbsp;&nbsp;O&nbsp;perigo&nbsp;se&nbsp;manifesta&nbsp;quando&nbsp;um&nbsp;barco&nbsp;deixa&nbsp;a&nbsp;posição.</tt></dd></dl>
 
-<dl><dt><a name="Posicao-defina_pesqueiro"><strong>defina_pesqueiro</strong></a>(self, pesca)</dt></dl>
+<dl><dt><a name="Posicao-defina_pesqueiro"><strong>defina_pesqueiro</strong></a>(self, pesca)</dt><dd><tt>Associa&nbsp;características&nbsp;de&nbsp;pesqueiro&nbsp;a&nbsp;esta&nbsp;posição.</tt></dd></dl>
 
 <dl><dt><a name="Posicao-nome"><strong>nome</strong></a>(self)</dt></dl>
 
@@ -623,8 +696,7 @@ Attributes:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-TestarDigitos"><strong>TestarDigitos</strong></a>(valor)</dt></dl>
- <dl><dt><a name="-debug_print"><strong>debug_print</strong></a>(msg)</dt><dd><tt>Para&nbsp;depuração</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-debug_print"><strong>debug_print</strong></a>(msg)</dt><dd><tt>Para&nbsp;depuração</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

@@ -124,6 +124,12 @@ class Pescador:
     self._redes += quant
 
   def remova_rede(self):
+    u""" Remove uma rede do pescador.
+    
+        Returns:
+          True - Se havia rede para remover.
+          False - Caso contrário.
+    """
     if self._redes > 0:
       self._redes -= 1
       return True
@@ -187,9 +193,9 @@ class Pescador:
   def destreza_na_pesca(self):
     u""" Indica o nível de destreza na pesca.
 
-         Quanto maior, mais rende um lançamento da rede.
         Returns:
           int - Nível de destreza
+                Quanto maior, mais rende um lançamento da rede.
     """
     return self._destreza_na_pesca
   
@@ -527,6 +533,9 @@ class Mercado:
     """
     if pescador.debite(quant * self._preco_racao):
       pescador.adicione_racoes(quant)
+      return True
+    else:
+      return False
 
   def venda_redes(self, pescador, quant):
     u""" Vende redes a um pescador.
@@ -541,6 +550,9 @@ class Mercado:
     """
     if pescador.debite(quant * self._preco_rede):
       pescador.adicione_redes(quant)
+      return True
+    else:
+      return False
       
   def venda_curso_navegacao(self, pescador):
     u""" Vende um curso de navegação a um pescador.
@@ -561,6 +573,9 @@ class Mercado:
     if ((destreza_nova < len(self._precos_cursos)) and
         pescador.debite(self._precos_cursos[destreza_nova])):
       pescador.aumentar_destreza_em_navegacao()
+      return True
+    else:
+      return False
     
   def venda_curso_pesca(self, pescador):
     u""" Vende um curso de pesca a um pescador.
@@ -582,6 +597,9 @@ class Mercado:
     if ((destreza_nova < len(self._precos_cursos)) and
         pescador.debite(self._precos_cursos[destreza_nova])):
       pescador.aumentar_destreza_na_pesca()
+      return True
+    else:
+      return False
 
   def compre_pescado(self, barco):
     u""" Operação de compra de pescado.
@@ -693,35 +711,64 @@ class Posicao:
     return self._nome
   
   def coordenadas(self):
+    u""" Indicas coordenadas da posição em um par ordenado: (longitude, latitude)
+    
+        Notes:
+          As coordenadas são dadas em graus e frações, relativas ao
+          Equador e ao Meridiano de Greenwich
+    """
     return (self._coord_x, self._coord_y)
     
   def adicione_adjacencia(self, pos):
+    u""" Adiciona posição adjacente a esta em um mapa.
+    """
     self._adjacencias.append(pos)
     
   def adjacencias(self):
+    u""" Retorna lista de posições adjacentes a esta em um mapa.
+    """
     return self._adjacencias
     
   def defina_perigo(self, perigo):
+    u""" Associa um perigo a esta posição.
+    
+        Notes:
+          O perigo se manifesta quando um barco deixa a posição.
+    """
     self._perigo = perigo
     
+  def perigo(self):
+    # TODO: Múltiplos perigos?
+    return self._perigo
+
   def defina_pesqueiro(self, pesca):
+    u""" Associa características de pesqueiro a esta posição.
+    """
     self._pesqueiro = pesca
     
+  def pesqueiro(self):
+    return self._pesqueiro
+  
   def crie_porto(self):
+    u""" Associa esta posição a um Porto, onde os barcos podem atracar.
+    """
     self._porto = Porto()
     
   def porto(self):
     return self._porto
   
-  def pesqueiro(self):
-    return self._pesqueiro
-  
-  def perigo(self):
-    # TODO: Múltiplos perigos?
-    return self._perigo
 
 class Mapa:
   u""" Um mapa, com diversas posições e suas adjacências
+  
+      Attributes:
+        arquivo imagem - Arquivo com a imagem correspondente ao mapa.
+        se/nw - Coordenadas correspondentes às extremidades do mapa.
+        largura/altura - Dimensões do mapa
+        porto principal - O porto de onde saem os barcos,
+          no início do jogo, e para onde retornam os barcos e pescadores resgatados.
+        posicoes - lista de posições formando uma rede interligada
+                    por rotas de navegação.
   """
   def __init__(self):
     self._arquivo_imagem = u''
@@ -736,9 +783,13 @@ class Mapa:
     return self._arquivo_imagem
   
   def dimensoes_imagem(self):
+    u""" Retorna dimensões (horizontal, vertical) da imagem.
+    """
     return (self._largura, self._altura)
   
   def posicao_na_imagem(self, posicao):
+    u""" Mapeia coordenadas em graus e frações no mapa para coordenadas na tela.
+    """
     nw = self._nw.coordenadas()
     se = self._se.coordenadas()
     coord = posicao.coordenadas()
@@ -836,7 +887,11 @@ class Mapa:
 
 
 class Jogo:
-  u""" Console do jogo, que controla as sequências de ações.
+  u""" Mediador do jogo, que controla as sequências de ações entre as classes internas.
+  
+      Esta classe esconde o modelo interno de implementação do jogo, apresentando
+      um protocolo com métodos que podem ser utilizados por diversas
+      interfaces homem-máquina para apresentar o jogo ao usuário.
   
       Attributes:
         mapa - Dicionário com posições interconectadas
@@ -861,20 +916,24 @@ class Jogo:
     self._pescadores = {}
     self._barcos = {}
     self._jornadas_pendentes = []
-    self._preco_jornada = 40
+    self._preco_jornada = 30
     self._mapa.preencha_mapa()
     
   def arquivo_imagem(self):
+    u""" Retorna nome do arquivo com imagem do mapa.
+    """
     return self._mapa.arquivo_imagem()
   
   def dimensoes_imagem(self):
+    u""" Retorna dimensões do mapa (largura, altura) em pixels.
+    """
     return self._mapa.dimensoes_imagem()
     
   def mensagens_iniciais(self):
     u""" Retorna lista de mensagens a serem apresentadas no início do jogo.
     
         Returns:
-          [msg, ...] - Mensagens de apresentação do jogo
+          [msg: str, ...] - Mensagens de apresentação do jogo
     """
     return self._mensagens
     
@@ -882,8 +941,8 @@ class Jogo:
     u""" Adiciona jogadores ao jogo.
 
         Notes:
-          Cada pescador inicia o jogo no porto principal,
-          com R$2.000,00 e ração para 1 dia.
+          Cada pescador inicia o jogo no porto principal, com R$2.000,00 e
+          ração para 1 dia.
         Attributes:
           nomes: [str, ...] - Nomes dos jogadores/pescadores
     """
@@ -897,6 +956,14 @@ class Jogo:
         self._mapa.porto_principal().porto().retorne_pescador(pescador)
 
   def prepare_alvorada(self):
+    u""" Executa operações necessárias para preparar um novo dia do jogo.
+    
+        As operações incluem: Definir novos preços para cada mercado,
+        publicar tabelas de preços e descontar rações diárias dos pescadores.
+        
+        Returns:
+          [msg:str, ...] - Lista de mensagens geradas pelas operações.
+    """
     mensagens = [u'', _(u'Começa um novo dia na vila.')]
     # Definir preços do dia em todos os mercados
     for pos_porto in self._mapa.portos():
@@ -950,6 +1017,10 @@ class Jogo:
   
   def pescadores_nos_mercados(self):
     u""" Devolve nomes dos pescadores que estão em algum porto com mercado.
+    
+        Estes pescadores poderão fazer compras para obter os equipamentos e
+        suprimentos necessários para sua jornada.
+ 
         Returns:
           nomes[(str, int), ...] - Nomes e saldos dos pescadores
     """
@@ -972,13 +1043,14 @@ class Jogo:
     
         Attributes:
           nome: str - Nome do pescador
-          pedidos: [(tipo_de_pedido, detalhe, ...), ...]
+          pedidos: [(tipo_de_pedido: str, detalhe, ...), ...]
           
         Notes:
           Para as rotinas que se seguem, envolvendo transações com bens,
-          As listas de bens/pedidos contêm tuplas,
-          em que o primeiro elemento é o tipo de bem (barco, rações, etc)
-          e os demais sãos detalhes, como quantidade, etc.
+          As listas de bens/pedidos contêm tuplas, em que
+          o primeiro elemento é o tipo de bem (barco, rações, etc) e
+          os demais são detalhes, como quantidade, etc.
+          Os tipos de bens incluem: barco, curso, rações, redes e dinheiro.
     """
     pescador = self._pescadores.get(nome)
     if pescador != None:
@@ -1012,9 +1084,12 @@ class Jogo:
   def bonifique_pescador(self, nome, bens):
     u""" Bonifica pescador com bens.
     
+        Este método pode ser utilizado ao se implementar operações para
+        o mestre do jogo, que seria capaz de bonificar ou penalizar outros jogadores.
+    
         Attributes:
           nome: str - Nome do pescador
-          bens: [(tipo_de_bem, detalhe, ...), ...]
+          bens: [(tipo_de_bem: str, detalhe, ...), ...]
     """
     pescador = self._pescadores.get(nome)
 
@@ -1048,7 +1123,7 @@ class Jogo:
         
   def inventario_pescador(self, nome):
     u""" Retorna bens de um pescador em formato semelhante
-        aos pedidos do método anterior.
+        aos pedidos do método atenda_pescador().
         
         Returns:
           bens: [(tipo_de_bem, detalhe, ...), ...]
@@ -1071,8 +1146,13 @@ class Jogo:
   def estado_barco(self, nome_barco):
     u""" Retorna estado de um barco.
     
+      Os dados retornados são aqueles que variam a cada jornada
+      e podem ser utilizadas para se tomar decisões sobre a jornada seguinte:
+      posição, coordenadas correspondentes, carga que ainda cabe no barco,
+      pescadores embarcados e quantidade de redes em bom estado no barco.
+    
       Returns:
-        [(característica, valor), ...]
+        [(caracteristica:str, valor), ...]
     """
     barco = self._barcos[nome_barco]
     
@@ -1085,8 +1165,13 @@ class Jogo:
 
     caracteristicas.append((_(u'capacidade restante'), str(barco.carga_livre())))
     
+    quantas_redes = 0
+    
     for pescador in barco.pescadores():
       caracteristicas.append((_(u'pescador'), pescador.nome()))
+      quantas_redes += pescador.redes()
+      
+    caracteristicas.append((_(u'redes'), str(quantas_redes)))
 
     return caracteristicas
   
@@ -1106,7 +1191,7 @@ class Jogo:
     return barcos_vagas
   
   def pescadores_para_barco(self, nome_barco):
-    u""" Retorna os pescadores que podem embarcar em um dado barco.
+    u""" Retorna os pescadores que podem embarcar em um dado barco (no mesmo porto).
     
         Returns:
           [nome_pescador: str, ...]
@@ -1125,6 +1210,9 @@ class Jogo:
         Attributes:
           nome_barco: str - O barco
           nomes_pescadores: [nome:str, ...] - Pescadores a embarcar
+          
+        Returns:
+          [msg:str, ...] - Mensagens relativas às operações realizadas.
     """
     mensagens = []
     barco = self._barcos[nome_barco]
@@ -1141,6 +1229,11 @@ class Jogo:
     return mensagens
 
   def destrua_rede(self, nome_barco):
+    u""" Remover a rede de algum pescador do barco indicado.
+    
+        Attributes:
+          nome_barco:str - Nome do barco a penalizar.
+    """
     pescador_escolhido = None
     barco = self._barcos[nome_barco]
     for pescador in barco.pescadores():
@@ -1152,6 +1245,9 @@ class Jogo:
         
   def credite_jornadas(self):
     u""" Creditar valor de uma jornada para cada pescador em terra.
+    
+        Returns:
+          [msg:str, ...] - Mensagens descrevendo as operações realizadas.
     """
     mensagens = []
     for pos_porto in self._mapa.portos():
@@ -1161,17 +1257,12 @@ class Jogo:
                          (pescador.nome(),self._preco_jornada, pos_porto.nome() ))
     return mensagens
   
-  def adicione_jornada(self, nome_barco, jornada):
-    u""" Define jornada para um barco
-    
-        Attributes:
-          nome_barco: str - O barco
-          jornada: str - Indica o que o barco irá fazer
-    """
-    self._jornadas_pendentes.append((nome_barco, jornada))
-
   def prepare_jornadas(self):
     u""" Preparar escolhas de jornada para cada barco tripulado.
+    
+        Returns:
+          [(nome_barco:str, [jornada:str, ...]), ...] - Pares com nome do barco
+            e lista de jornadas possíveis.
     """
     barcos_jornadas = []
     for nome_barco, barco in self._barcos.items():
@@ -1190,7 +1281,26 @@ class Jogo:
             barcos_jornadas.append((nome_barco, jornadas))
     return barcos_jornadas
 
+  def adicione_jornada(self, nome_barco, jornada):
+    u""" Define jornada para um barco
+    
+        As jornadas podem ser pescar, descontar atraso ou navegar para um destino.
+    
+        Attributes:
+          nome_barco: str - O barco
+          jornada: str - Indica o que o barco irá fazer
+    """
+    self._jornadas_pendentes.append((nome_barco, jornada))
+
   def execute_jornadas(self):
+    u""" Executa as jornadas pendentes para todos os barcos.
+    
+        As jornadas pendentes são as que foram incluídas através do método
+        adicione_jornada().
+        
+        Returns:
+          [msg:str, ...] - Lista de mensagens relativas às operações realizadas.
+    """
     mensagens = [u'']
 
     while (len(self._jornadas_pendentes) > 0):
@@ -1342,36 +1452,42 @@ class Jogo:
           porto.adicione_barco(barco)
 
     msg_racoes = _(u'\nRações restantes: ')
+
     for (nome, pescador) in self._pescadores.items():
       msg_racoes += _(u'%s tem %d, ') % (nome, pescador.consulte_racoes())
-    mensagens.append(msg_racoes)
 
+    mensagens.append(msg_racoes)
     return mensagens
   
   def extratos_pescadores(self):
+    u""" Retorna dicionário com os saldos em dinheiro de cada pescador no jogo.
+    """
     extratos = {}
     for (nome, pescador) in self._pescadores.items():
       extratos[nome] = pescador.consulte_saldo()
     return extratos
   
   def transfira_valor(self, nome_credito, nome_debito, valor, contrato):
+    u""" Transfere valor em dinheiro de um pescador para outro, conforme contrato.
+    
+        Attributes:
+          nome_credito:str - Nome do pescador que vai receber o valor.
+          nome_debito:str - Nome do pescador a ser debitado.
+          valor:int - Valor a ser transferido.
+          contrato:str - Razão da transferência.
+          
+        Returns:
+          [msg:str, ...] - Mensagens relativas a operações realizadas.
+    """
+    mensagens = []
     if (self._pescadores[nome_debito].debite(valor) and valor > 0):
       self._pescadores[nome_credito].credite(valor)
-    # TODO: Lembrar de registrar contrato no jornal.
-
-# Parte do código de diálogos inspirada nos exemplos em:
-# http://www.python-course.eu/tkinter_labels.php
-
-def TestarDigitos(valor):
-  try:
-    for digito in valor:
-      if not digito.isdigit():
-        debug_print(_(u'Valor não numérico: ') + valor)
-        return False
-    return True
-  except:
-      debug_print(_(u'Valor inválido: ') + valor)
-      return False
+      mensagens.append(_(u'Pagamento de  %s a %s no valor de R$ %d,00 por:\n%s') %
+                       (nome_debito, nome_credito, valor, contrato))
+    else:
+      mensagens.append(_(u'Contrato com %s cancelado por falta de fundos de %s.') %
+                       nome_credito, nome_debito)
+    return mensagens
 
 
 if __name__ == '__main__':
@@ -1396,6 +1512,20 @@ if __name__ == '__main__':
     """
     msg = nome_jogo + _(u'\nVersão ') + versao_jogo + _(u'\nAutor: ') + autor_jogo
     messagebox.showinfo(_(u'Sobre Pescadores'), msg)
+
+  # Parte do código de diálogos inspirada nos exemplos em:
+  # http://www.python-course.eu/tkinter_labels.php
+
+  def teste_digitos(valor):
+    try:
+      for digito in valor:
+        if not digito.isdigit():
+          debug_print(_(u'Valor não numérico: ') + valor)
+          return False
+      return True
+    except:
+        debug_print(_(u'Valor inválido: ') + valor)
+        return False
 
 
   # Controle do Jogo, mantém o estado corrente.
@@ -1532,7 +1662,7 @@ if __name__ == '__main__':
       self._janela = tkinter.Toplevel()
       self._janela.title(_(u'Pescadores - Mercado'))
       
-      so_digitos = (raiz.register(TestarDigitos), u'%P')
+      so_digitos = (raiz.register(teste_digitos), u'%P')
 
       linhas = 0
 
@@ -1908,7 +2038,7 @@ if __name__ == '__main__':
       self._janela = tkinter.Toplevel()
       self._janela.title(_(u'Pescadores - Transferências'))
       
-      so_digitos = (raiz.register(TestarDigitos), u'%P')
+      so_digitos = (raiz.register(teste_digitos), u'%P')
 
       linhas = 0
 
@@ -2011,11 +2141,10 @@ if __name__ == '__main__':
       if (opcao_debito != _(u'nenhum') and nome_credito != _(u'nenhum') and valor > 0):
         nome_debito = opcao_debito.split(u':')[0]
 
-        jogo_ativo.transfira_valor(nome_credito, nome_debito, valor, contrato)
-        controle_jogo.jornal().adicione_mensagem(
-              _(u'Pagamento de  %s a %s no valor de R$ %d,00 por:\n%s') %
-              (nome_debito, nome_credito, valor, contrato))
-        
+        mensagens = jogo_ativo.transfira_valor(nome_credito, nome_debito, valor, contrato)
+        for msg in mensagens:
+          controle_jogo.jornal().adicione_mensagem(msg)
+                
       self._termine()
 
     def _termine(self, *args):

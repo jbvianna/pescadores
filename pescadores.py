@@ -41,10 +41,7 @@ except ImportError:
   import Tkinter as tkinter
   import tkMessageBox as messagebox
 
-# TODO: Comentários
 # TODO: Fatorar e separar Jogo e subclasses em biblioteca
-# TODO: Menu de ajuda
-# TODO: Solução melhor para avançar estado
 # TODO: Diálogos dentro da tela principal
 
 
@@ -499,9 +496,9 @@ class Mercado:
           (barco: Barco, preco: int)
     """
     if (tipo == _(u'reforçado')):
-      return (Barco(tipo, nome, 2, 400, 5), 1950)
+      return (Barco(tipo, nome, 2, 400, 3), 1950)
     else:
-      return (Barco(_(u'simples'), nome, 1, 150, 3), 1000)
+      return (Barco(_(u'simples'), nome, 1, 150, 1), 1000)
     
   def venda_barco(self, pescador, barco, preco):
     u""" Vende um barco a um pescador.

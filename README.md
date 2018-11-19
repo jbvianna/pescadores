@@ -12,3 +12,13 @@ Completar documentação dos métodos em pescadores.py, atualizar mensagens de i
 Além das mudanças descritas, foram realizadas pequenas alterações no programa.
 O script gera_locale.sh foi criado para atualizar os arquivos de i18n, e
 gera_release.sh foi simplificado. 
+
+Date:   Mon Nov 19 10:56:34 2018 -0200
+Author: Joao Vianna <jvianna@gmail.com>
+
+    Testes das classes Pesca, Perigo, Posicao, Barco e Pescador.
+    
+    Suíte de testes para o módulo pescadores (incompleta).
+    Os testes revelaram que os valores para resistência dos barcos estavam muito elevados.
+    Isto foi corrigido no programa e nos manuais.
+ 

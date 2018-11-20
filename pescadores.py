@@ -1419,7 +1419,7 @@ class Jogo:
           dano = perigo.teste(destreza, resistencia, danos)
           
           if dano < -1:
-            mensagens.append(perigo.descricao()
+            mensagens.append(perigo.descricao())
 
             # Dano grave
             if perigo.nome() == u'ventania':
@@ -1444,7 +1444,7 @@ class Jogo:
                   pescador.remova_barco(barco)
                   break
           elif dano < 0:
-            mensagens.append(perigo.descricao()
+            mensagens.append(perigo.descricao())
 
             # Dano leve
             if perigo.nome() == u'ventania':

@@ -50,6 +50,15 @@ def debug_print(msg):
   """
   print(msg)
 
+def strtofloat(txt):
+  u""" Auxiliar, para converter vírgulas em pontos (l10n)
+
+      Parameters:
+        txt:str - Texto a converter
+      Returns
+        float - Valor correspondente ao texto convertido para ponto flutuante.
+  """
+  return float(txt.replace(u',', u'.'))
 
 # Estrutura interna do jogo
 
@@ -374,8 +383,8 @@ class Barco:
 class Perigo:
   u""" Um perigo, que exige um teste de navegação
       Attributes:
-        nome: string - Nome ou tipo do perigo. Exemplos: Tempestade, Ventania, etc.
-        descricao: string - pode ser usada nos diálogos que tratam do perigo.
+        nome: str - Tipo do perigo. Exemplos: tempestade, ventania, etc.
+        descricao: str - pode ser usada nos diálogos que tratam do perigo.
         probabilidade: int - Valor de 0 a 6, que será comparado com um lançamento
           de dado para definir se o perigo se materializou.
           0 nunca acontece, 6 sempre acontece.
@@ -390,6 +399,9 @@ class Perigo:
     
   def nome(self):
     return self._nome
+  
+  def descricao(self):
+    return self._descricao
     
   def teste(self, destreza, resistencia, danos):
     u""" Realiza um teste de destreza, para decidir se o perigo foi superado ou não.
@@ -795,63 +807,144 @@ class Mapa:
     y = int(((nw[1] - coord[1]) / (nw[1] - se[1])) * self._altura)
     return (x, y)
 
-  def preencha_mapa(self):
+  def preencha_mapa(self, nome_arq):
     u""" Preenche o mapa com diversas posições interconectadas.
     
-        Notes: Pelo menos uma deve ter um porto com mercado,
-                e uma outra deve ter um pesqueiro.
+        Parameters:
+          nome_arq:str - Arquivo que descreve o mapa.
+    
+        Notes:
+          Pelo menos uma posição deve ter um porto com mercado,
+          e uma outra deve ter um pesqueiro.
+          O arquivo com a descrição do mapa tem formato .CSV,
+          formando diversas tabelas, conforme descrito no corpo deste método.
+              
     """
-    # TODO: Forma de ler outros mapas em arquivos
-    self._arquivo_imagem = u'mapa_pesca.png'
+    mensagens = []
+    arq_mapa = open(nome_arq, u'rb')
     
-    self._largura = 1280
-    self._altura = 720
+    # Estados possíveis: (I)nício, (D)imensões, (P)osições, (R)otas, Pes(Q)eiro,
+    #                    Peri(G)o , (F)im
+    # Sub-estado 0 - Esperando cabeçalho, Sub-estado 1 - Lendo dados.
+    estado = u'I'
     
-    self._nw = Posicao(u'NW', _(u'Noroeste'),-44.345662, -23.165140)
-    self._se = Posicao(u'SE', _(u'Sudeste'),-44.783512, -23.399335)
-    
-    parati = Posicao(_(u'Parati'), _(u'Vila de Parati, onde moram os pescadores'),
-                      -44.718944, -23.213494)
-    algodao = Posicao(_(u'Ilha do Algodão'), _(u'Local abrigado, com pouco pescado'),
-                      -44.593240, -23.225626)
-    pendao = Posicao(_(u'Lages do Pendão'),
-                     _(u'Local com muito pescado, e ventos fortes'),
-                      -44.401589, -23.180241)
-    juatinga = Posicao(_(u'Ponta da Juatinga'),
-                       _(u'Local perigoso, sujeito a tempestades'),
-                       -44.469046, -23.293542)
-    cairucu = Posicao(_(u'Ilha Cairuçu'), _(u'Local seguro, e de boa pesca'),
-                       -44.561544, -23.343153)
-    alto_mar = Posicao(_(u'Alto Mar'), _(u'Local de perigos e pesca incertos'),
-                       -44.393881, -23.346023)
-    
-    parati.adicione_adjacencia(algodao)
-    algodao.adicione_adjacencia(parati)
-    algodao.adicione_adjacencia(pendao)
-    algodao.adicione_adjacencia(juatinga)
-    pendao.adicione_adjacencia(algodao)
-    juatinga.adicione_adjacencia(algodao)
-    juatinga.adicione_adjacencia(cairucu)
-    juatinga.adicione_adjacencia(alto_mar)
-    cairucu.adicione_adjacencia(juatinga)
-    alto_mar.adicione_adjacencia(juatinga)
-    
-    algodao.defina_pesqueiro(Pesca(3, 50))
-    pendao.defina_pesqueiro(Pesca(4, 100))
-    cairucu.defina_pesqueiro(Pesca(3, 150))
-    
-    pendao.defina_perigo(Perigo(_(u'ventania'), _(u'Ocorreu uma forte ventania ao sair das lages.'),
-                                6, 5))
-    juatinga.defina_perigo(Perigo(_(u'tempestade'), _(u'Ocorreu uma tempestade!'),
-                                  4, 7))
+    for linha in arq_mapa.readlines():
+      linha = linha.decode(u'utf-8').strip()
+      campos = linha.strip(u'\t').split(u'\t')
+      
+      if (len(campos) > 0 and len(campos[0]) > 0):
+        # Linha tem conteúdo
+        if estado == u'I':
+          if campos[0] == u'Pescadores – Mapa':
+            estado = u'D0'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Falta cabeçalho.'))
+            break
+        elif estado == u'D0':
+          if (linha.strip() == u'Largura\tAltura\tNorte\tSul\tLeste\tOeste\tImagem'):
+            estado = u'D1'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Esperava dimensões.'))
+            break
+        elif estado == u'D1':
+          if len(campos) == 7:
+            self._largura = int(campos[0])
+            self._altura = int(campos[1])
+            self._nw = Posicao(u'NW', _(u'Noroeste'),
+                               strtofloat(campos[5]), strtofloat(campos[2]))
+            self._se = Posicao(u'SE', _(u'Sudeste'),
+                               strtofloat(campos[4]), strtofloat(campos[3]))
+            self._arquivo_imagem = campos[6]
+            estado = u'P0'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Dimensões inválidas.'))
+            break
+        elif estado == u'P0':
+          if (linha.strip() == u'Posição\tPrincipal\tPorto\tMercado\tLatitude\tLongitude\tDescrição'):
+            estado = u'P1'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Esperava posições.'))
+            break
+        elif estado == u'P1':
+          if len(campos) == 7:
+            posicao = Posicao(campos[0], campos[6],
+                              strtofloat(campos[5]), strtofloat(campos[4]))
+            if campos[2] == u'S':
+              posicao.crie_porto()
+              if campos[3] == u'S':
+                posicao.porto().crie_mercado()
 
-    parati.crie_porto()
-    parati.porto().crie_mercado()
+            if campos[1] == u'S':
+              self._porto_principal = posicao
+              
+            self._posicoes[campos[0]] = posicao
+          else:
+            estado = u'R0'
+        elif estado == u'R1':
+          if len(campos) == 2:
+            origem = self._posicoes[campos[0]]
+            destino = self._posicoes[campos[1]]
+            origem.adicione_adjacencia(destino)
+          else:
+            estado = u'Q0'
+        elif estado == u'Q1':
+          if len(campos) == 3:
+            posicao = self._posicoes[campos[0]]
+            dificuldade = int(campos[1])
+            rendimento = int(campos[2].strip())
+            posicao.defina_pesqueiro(Pesca(dificuldade, rendimento))
+          else:
+            estado = u'G0'
+        elif estado == u'Q1':
+          if len(campos) == 3:
+            posicao = self._posicoes[campos[0]]
+            dificuldade = int(campos[1])
+            rendimento = int(campos[2])
+            posicao.defina_pesqueiro(Pesca(dificuldade, rendimento))
+          else:
+            estado = u'G0'
+        elif estado == u'G1':
+          if len(campos) == 5:
+            posicao = self._posicoes[campos[1]]
+            probabilidade = int(campos[2])
+            dificuldade = int(campos[3])
+            descricao = campos[4]
+            posicao.defina_perigo(Perigo(campos[0], descricao, probabilidade, dificuldade))
+          else:
+            estado = u'F'
+
+        # Nota: Aqui, o estado escorre sem ler nova linha. Não usar elif.
+        if estado == u'R0':
+          if (linha.strip() == u'Origem\tDestino'):
+            estado = u'R1'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Esperava rotas.'))
+            break
+        elif estado == u'Q0':
+          if (linha.strip() == u'Pesqueiro\tDificuldade\tRendimento'):
+            estado = u'Q1'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Esperava pesqueiros.'))
+            break
+        elif estado == u'G0':
+          if (linha.strip() == u'Perigo\tPosição\tProbabilidade\tDificuldade\tDescrição'):
+            estado = u'G1'
+          else:
+            mensagens.append(_(u'Formato de arquivo inválido. Esperava perigos.'))
+            break
+        elif estado == u'F':
+          mensagens.append(_(u'Formato de arquivo inválido. Linhas desconhecidas.'))
+          
+    arq_mapa.close()
     
-    # TODO: Melhor forma de encontrar o porto principal.
-    self._porto_principal = parati
-    for posicao in [parati, algodao, pendao, juatinga, cairucu, alto_mar ]:
-      self._posicoes[posicao.nome()] = posicao
+    if self._porto_principal is None:
+      mensagens.append(_(u'Mapa não contém um porto principal.'))
+    elif self._porto_principal.porto() is None:
+      mensagens.append(_(u'Porto principal indicado não é um porto.'))
+    elif self._porto_principal.porto().mercado() is None:
+      mensagens.append(_(u'Porto principal indicado não é um mercado.'))
+      
+    return mensagens
       
   def porto_principal(self):
     u""" Indica posição onde está o porto principal, com mercado.
@@ -898,8 +991,7 @@ class Jogo:
                             Lista de jornadas ainda não executadas pelos barcos
         preco_jornada:int - Preço do dia de trabalho no porto.
   """
-  _mensagens = [_(u'Vocês são pescadores da colônia de pesca de Paraty.'),
-    _(u'Esta é uma vila tranquila, no sul do Estado do Rio de Janeiro.'),
+  _mensagens = [_(u'Vocês são pescadores de uma colônia de pesca em uma vila tranquila.'),
     _(u'O pescado é farto, mas nos pontos onde há mais peixes também há perigos no mar.'),
     _(u'Nos pontos onde a pesca é mais frequente, é preciso evitar a sobre-pesca, garantindo que os peixes se reproduzam.'),
     u'',
@@ -914,7 +1006,7 @@ class Jogo:
     self._barcos = {}
     self._jornadas_pendentes = []
     self._preco_jornada = 30
-    self._mapa.preencha_mapa()
+    self._mapa.preencha_mapa(_(u'mapa_parati.csv'))
     
   def arquivo_imagem(self):
     u""" Retorna nome do arquivo com imagem do mapa.
@@ -1327,11 +1419,12 @@ class Jogo:
           dano = perigo.teste(destreza, resistencia, danos)
           
           if dano < -1:
+            mensagens.append(perigo.descricao()
+
             # Dano grave
-            if perigo.nome() == _(u'ventania'):
+            if perigo.nome() == u'ventania':
               mensagens.append(
-                _(u'Barco %s se atrasou 2 dias para chegar a %s por causa de uma ventania.') %
-                (nome_barco, destino))
+                _(u'Barco %s se atrasou 2 dias para chegar a %s.') % (nome_barco, destino))
               barco.atrase(2)
             else:
               # Danos severos fizeram o barco naufragar.
@@ -1351,16 +1444,16 @@ class Jogo:
                   pescador.remova_barco(barco)
                   break
           elif dano < 0:
+            mensagens.append(perigo.descricao()
+
             # Dano leve
-            if perigo.nome() == _(u'ventania'):
+            if perigo.nome() == u'ventania':
               mensagens.append(
-                _(u'Barco %s se atrasou 1 dia para chegar a %s por causa de uma ventania.') %
-                (nome_barco, destino))
+                _(u'Barco %s se atrasou 1 dia para chegar a %s.') % (nome_barco, destino))
               barco.atrase(1)
             else:
               mensagens.append(
-                _(u'Barco %s perdeu parte da carga por causa de uma tempestade.') %
-                nome_barco)
+                _(u'Barco %s perdeu parte da carga.') % nome_barco)
               barco.reduza_carga()
               barco_chegou = True
               
@@ -2393,4 +2486,4 @@ if __name__ == '__main__':
 
   my_main(sys.argv[1:], len(sys.argv) - 1)
 
-    
+

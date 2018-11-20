@@ -1,0 +1,33 @@
+Pescadores – Mapa						
+						
+Largura	Altura	Norte	Sul	Leste	Oeste	Imagem
+1280	720	-23,16514	-23,399335	-44,783512	-44,345662	mapa_parati_img.png
+						
+Posição	Principal	Porto	Mercado	Latitude	Longitude	Descrição
+Parati	S	S	S	-23,213494	-44,718944	Parati village, where the fishermen live
+Cotton Island	N	N	N	-23,225626	-44,59324	Sheltered place with little fish
+Lages do Pendão	N	N	N	-23,180241	-44,401589	Location with lots of fish, and strong winds
+Ponta da Juatinga	N	N	N	-23,293542	-44,469046	Dangerous place, subject to storms
+Cairuçu Island	N	N	N	-23,343153	-44,561544	Safe place with plenty of fish
+Open Sea	N	N	N	-23,346023	-44,393881	Site of uncertain fishing and dangers
+						
+Origem	Destino					
+Parati	Cotton Island					
+Cotton Island	Parati					
+Cotton Island	Lages do Pendão					
+Cotton Island	Ponta da Juatinga					
+Lages do Pendão	Cotton Island					
+Ponta da Juatinga	Cotton Island					
+Ponta da Juatinga	Cairuçu Island					
+Ponta da Juatinga	Open Sea					
+Cairuçu Island	Ponta da Juatinga					
+Open Sea	Ponta da Juatinga					
+						
+Pesqueiro	Dificuldade	Rendimento				
+Cotton Island	3	50				
+Lages do Pendão	4	100				
+Cairuçu Island	3	150				
+						
+Perigo	Posição	Probabilidade	Dificuldade	Descrição		
+ventania	Lages do Pendão	6	5	There were strong winds coming out of Lages do Pendão.		
+tempestade	Ponta da Juatinga	4	7	There was a storm in Ponta da Juatinga!		

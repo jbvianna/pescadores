@@ -11,7 +11,9 @@ cp pescadores_manual.html $1
 cp pescadores_jogo.pdf $1
 cp pescadores.png $1
 cp pescadores.ico $1
-cp mapa_pesca.png $1
+cp mapa_parati.csv $1
+cp mapa_parati_en.csv $1
+cp mapa_parati_img.png $1
 cp executar.bat $1
 cp executar.sh $1
 cp gera_release.sh $1

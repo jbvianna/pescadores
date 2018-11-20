@@ -1,0 +1,33 @@
+Pescadores – Mapa						
+						
+Largura	Altura	Norte	Sul	Leste	Oeste	Imagem
+1280	720	-23,16514	-23,399335	-44,783512	-44,345662	mapa_parati_img.png
+						
+Posição	Principal	Porto	Mercado	Latitude	Longitude	Descrição
+Parati	S	S	S	-23,213494	-44,718944	Vila de Parati, onde moram os pescadores
+Ilha do Algodão	N	N	N	-23,225626	-44,59324	Local abrigado, com pouco pescado
+Lages do Pendão	N	N	N	-23,180241	-44,401589	Local com muito pescado, e ventos fortes
+Ponta da Juatinga	N	N	N	-23,293542	-44,469046	Local perigoso, sujeito a tempestades
+Ilha Cairuçu	N	N	N	-23,343153	-44,561544	Local seguro, e de boa pesca
+Alto Mar	N	N	N	-23,346023	-44,393881	Local de perigos e pesca incertos
+						
+Origem	Destino					
+Parati	Ilha do Algodão					
+Ilha do Algodão	Parati					
+Ilha do Algodão	Lages do Pendão					
+Ilha do Algodão	Ponta da Juatinga					
+Lages do Pendão	Ilha do Algodão					
+Ponta da Juatinga	Ilha do Algodão					
+Ponta da Juatinga	Ilha Cairuçu					
+Ponta da Juatinga	Alto Mar					
+Ilha Cairuçu	Ponta da Juatinga					
+Alto Mar	Ponta da Juatinga					
+						
+Pesqueiro	Dificuldade	Rendimento				
+Ilha do Algodão	3	50				
+Lages do Pendão	4	100				
+Ilha Cairuçu	3	150				
+						
+Perigo	Posição	Probabilidade	Dificuldade	Descrição		
+ventania	Lages do Pendão	6	5	Ocorreu uma forte ventania ao sair das lages.		
+tempestade	Ponta da Juatinga	4	7	Ocorreu uma tempestade na Ponta da Juatinga!		

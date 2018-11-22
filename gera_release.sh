@@ -14,6 +14,7 @@ cp pescadores.ico $1
 cp mapa_parati.csv $1
 cp mapa_parati_en.csv $1
 cp mapa_parati_img.png $1
+cp mapa_teste.csv $1
 cp executar.bat $1
 cp executar.sh $1
 cp gera_release.sh $1

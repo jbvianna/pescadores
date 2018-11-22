@@ -16,8 +16,6 @@ u""" Pescadores Tests - Regression tests for the pescadores library.
 import unittest
 import pescadores
 
-# TODO: Testes para: Jogo, Mapa, Mercado, Porto
-
 class TestPerigo(unittest.TestCase):
   def setUp(self):
     self.ventania = pescadores.Perigo(u'ventania', u'Ocorreu uma forte ventania.', 6, 5)
@@ -266,7 +264,6 @@ class TestPosicao(unittest.TestCase):
 class TestBarco(unittest.TestCase):
   u""" Testes para a classe Barco
   """
-  
   def setUp(self):
     self.saga = pescadores.Barco(u'simples', u'Saga', 1, 150, 1)
     self.fortuna = pescadores.Barco(u'reforçado', u'Fortuna', 2, 450, 3)
@@ -296,6 +293,14 @@ class TestBarco(unittest.TestCase):
     self.assertEqual(self.fartura.carga_livre(), 1200)
     self.assertEqual(self.fartura.caracteristicas(), (4, 0))
     self.assertFalse(self.fartura.em_atraso())
+    
+  def test_2_carga(self):
+    self.saga.carregue(90)
+    self.assertEqual(self.saga.carga_livre(), 60)
+
+    self.saga.carregue(30)
+    
+    self.assertEqual(self.saga.descarregue(), 120)
     
     
 class TestPescador(unittest.TestCase):
@@ -373,7 +378,160 @@ class TestPescador(unittest.TestCase):
 
     self.assertTrue(self.joao.debite(300))
     self.assertEqual(self.joao.consulte_saldo(), 700)
+
+
+class TestPorto(unittest.TestCase):
+  u""" Testes para a classe Porto
+  """
+  
+  def setUp(self):
+    self.joao = pescadores.Pescador(u'João')
+    self.pedro = pescadores.Pescador(u'Pedro')
     
+    self.saga = pescadores.Barco(u'simples', u'Saga', 1, 150, 1)
+    self.fortuna = pescadores.Barco(u'simples', u'Fortuna', 1, 150, 1)
+    
+    self.parati = pescadores.Posicao(u'Parati', u'Vila no RJ',
+                                      -44.718944, -23.213494)
+    
+    self.parati.crie_porto()
+    
+  def test_1_atributos(self):
+    porto = self.parati.porto()
+    self.assertIsNone(porto.mercado())
+    self.assertEqual(len(porto.pescadores_em_terra()), 0)
+    self.assertFalse(porto.tem_pescador(self.joao))
+    
+  def test_2_pescadores(self):
+    porto = self.parati.porto()
+
+    porto.retorne_pescador(self.joao)
+    porto.retorne_pescador(self.pedro)
+
+    self.assertEqual(len(porto.pescadores_em_terra()), 2)
+    self.assertTrue(porto.tem_pescador(self.joao))
+
+    porto.remova_pescador(self.joao)
+
+    self.assertFalse(porto.tem_pescador(self.joao))
+    self.assertTrue(porto.tem_pescador(self.pedro))
+    
+  def test_3_barcos_mercado(self):
+    porto = self.parati.porto()
+    
+    porto.adicione_barco(self.saga)
+    porto.adicione_barco(self.fortuna)
+    
+    porto.remova_barco(self.saga)
+    
+    self.assertIsNone(porto.mercado())
+    porto.crie_mercado()
+    self.assertIsNotNone(porto.mercado())
+    self.assertIsInstance(porto.mercado(), pescadores.Mercado)
+    
+
+class TestMercado(unittest.TestCase):
+  u""" Testes para a classe Mercado
+  """
+  def setUp(self):
+    self.joao = pescadores.Pescador(u'João')
+    self.joao.credite(2000)
+    
+    self.mercado = pescadores.Mercado()
+    self.mercado.defina_precos_do_dia()
+    
+  def test_1_vendas(self):
+    self.assertTrue(self.mercado.venda_curso_pesca(self.joao))
+    # Um curso não custa menos que R$200,00
+    self.assertTrue(self.joao.consulte_saldo() <= 1800)
+    self.assertTrue(self.mercado.venda_racoes(self.joao, 8))
+    self.assertTrue(self.mercado.venda_redes(self.joao, 2))
+    
+    self.assertTrue(self.joao.consulte_saldo() < 1200)
+    
+    (barco_simples, preco_simples) = self.mercado.fabrique_barco(u'simples', u'Saga')
+    (barco_reforcado, preco_reforcado) = self.mercado.fabrique_barco(u'reforçado', u'Fortaleza')
+    
+    self.assertIsInstance(barco_simples, pescadores.Barco)
+    
+    self.assertTrue(preco_simples > 800)
+    self.assertTrue(preco_simples < preco_reforcado)
+
+    # Depois de comprar tanto, João não deveria ter dinheiro para comprar um barco reforçado
+    self.assertFalse(self.mercado.venda_barco(self.joao, barco_reforcado, preco_reforcado))
+    
+    self.assertTrue(self.mercado.venda_barco(self.joao, barco_simples, preco_simples))
+
+    # Agora, vamos ver se João tem o que comprou:
+    self.assertEqual(self.joao.consulte_racoes(), 8)
+    self.assertEqual(self.joao.redes(), 2)
+    self.assertEqual(self.joao.destreza_em_navegacao(), 0)
+    self.assertEqual(self.joao.destreza_na_pesca(), 1)
+    self.assertEqual(len(self.joao.barcos()), 1)
+    
+    # Se se gastou mesmo o dinheiro
+    self.assertTrue(self.joao.consulte_saldo() < 500)
+    
+  def test_2_compra(self):
+    (barco, preco) = self.mercado.fabrique_barco(u'simples', u'Saga')
+    
+    barco.carregue(90)
+    
+    valor = self.mercado.compre_pescado(barco)
+    
+    self.assertTrue((valor / 90) >= 5)
+    # A operação de compra descarrega todo o pescado do barco.
+    self.assertEqual(barco.descarregue(), 0)
+    
+    
+class TestMapa(unittest.TestCase):
+  u""" Testes para a classe Mapa
+  
+      Notes:
+        Este teste depende de um arquivo autiliar: mapa_teste.csv,
+        com quatro posições, para o porto de Parati, Ilha do Algodão,
+        Ponta da Juatinga e Lages do Pendão. Nos dois últimos, deve
+        haver perigos, e na Ilha e nas Lages, pesqueiros.
+  """
+  def setUp(self):
+    self.mapa = pescadores.Mapa()
+    self.mapa.preencha_mapa(u'mapa_teste.csv')
+
+  def test_1_posicoes(self):
+    self.assertIsNotNone(self.mapa.porto_principal())
+    self.assertIsInstance(self.mapa.porto_principal(), pescadores.Posicao)
+    self.assertEqual(self.mapa.porto_principal().nome(), u'Parati')
+    
+    lages_do_pendao = self.mapa.ache_posicao(u'Lages do Pendão')
+    ilha_do_algodao = self.mapa.ache_posicao(u'Ilha do Algodão')
+    ponta_da_juatinga = self.mapa.ache_posicao(u'Ponta da Juatinga')
+    
+    self.assertTrue(ilha_do_algodao in self.mapa.porto_principal().adjacencias())
+    self.assertFalse(ponta_da_juatinga in self.mapa.porto_principal().adjacencias())
+    
+    self.assertIsNotNone(ilha_do_algodao.pesqueiro())
+    self.assertIsNone(ilha_do_algodao.perigo())
+    
+    self.assertIsNotNone(ponta_da_juatinga.perigo())
+    self.assertIsNone(ponta_da_juatinga.pesqueiro())
+    
+    self.assertTrue(ponta_da_juatinga in ilha_do_algodao.adjacencias())
+    self.assertTrue(lages_do_pendao in ilha_do_algodao.adjacencias())
+    self.assertTrue(ponta_da_juatinga in ilha_do_algodao.adjacencias())
+    self.assertTrue(ilha_do_algodao in lages_do_pendao.adjacencias())
+    self.assertTrue(ilha_do_algodao in ponta_da_juatinga.adjacencias())
+    self.assertFalse(ponta_da_juatinga in lages_do_pendao.adjacencias())
+    
+    (long_pendao, lat_pendao) = lages_do_pendao.coordenadas()
+    (long_algodao, lat_algodao) = ilha_do_algodao.coordenadas()
+    (long_juatinga, lat_juatinga) = ponta_da_juatinga.coordenadas()
+    
+    self.assertTrue(long_algodao < long_pendao)
+    self.assertTrue(lat_algodao < lat_pendao)
+
+    self.assertTrue(long_algodao < long_juatinga)
+    self.assertTrue(lat_algodao > lat_juatinga)
+
 
     
 if __name__ == '__main__':

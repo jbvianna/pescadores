@@ -47,3 +47,17 @@ modified:   locales/pt/LC_MESSAGES/pescadores.mo
 modified:   locales/pt/LC_MESSAGES/pescadores.po
 deleted:    mapa_pesca.png
 modified:   pescadores.py
+
+Date:   Tue Nov 25 11:20:34 2018 -0200
+Author: Joao Vianna <jvianna@gmail.com>
+
+Versão 0.95
+
+O diálogo de transferências foi ampliado para permitir operações
+de compra e venda de barcos e redes, além de transferências
+de dinheiro.
+
+Foi criado um jogador especial: Mestre, que recebe mais dinheiro
+no início do jogo, mas não embarca nunca. O Mestre pode realizar
+transações com os pescadores, podendo ser utilizado como um
+comerciante, ou para aplicar bônus e penalidades.

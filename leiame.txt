@@ -20,3 +20,7 @@ Versão 0.9 - 2018-11-15
   Mapa na tela principal,
   Painel com Jornal Diário.
 
+Versão 0.95 - 2018-11-26
+  Mapa lido de arquivo .csv (pode ser ampliado/modificado)
+  Diálogo de transferências ampliado
+  Jogador especial: Mestre

@@ -7,14 +7,15 @@ u""" Pescadores - Jogo de simulação situado em uma colônia de pescadores.
       'Apache License, Version 2.0'
     
     __author__ = "João Vianna <jvianna@gmail.com> e Ivan Wermelinger"
-    __date__ = "15 Novembro 2018"
-    __version__ = "0.90"
+    __date__ = "26 Novembro 2018"
+    __version__ = "0.95"
     
     History:
     Version 0.50 - Versão Inicial
     Version 0.80 - Estruturas do Jogo montadas
     Version 0.85 - Em testes, implementado o jornal
     Version 0.90 - Internacionalização - Português e Inglês
+    Version 0.95 - Transferindo bens
 """
 from __future__ import division
 
@@ -129,15 +130,15 @@ class Pescador:
     """
     self._redes += quant
 
-  def remova_rede(self):
+  def remova_redes(self, quantas = 1):
     u""" Remove uma rede do pescador.
     
         Returns:
           True - Se havia rede para remover.
           False - Caso contrário.
     """
-    if self._redes > 0:
-      self._redes -= 1
+    if self._redes >= quantas:
+      self._redes -= quantas
       return True
     else:
       return False
@@ -1038,7 +1039,10 @@ class Jogo:
     for nome in nomes:
       if (self._pescadores.get(nome) == None):
         pescador = Pescador(nome)
-        pescador.credite(2000)        # Cada jogador começa o jogo com R$2.000,00
+        if (nome == _(u'Mestre')):
+          pescador.credite(10000)     # Mestre é um jogador especial
+        else:
+          pescador.credite(2000)      # Cada jogador começa o jogo com R$2.000,00
         pescador.adicione_racoes(1)   # Para a primeira manhã
 
         self._pescadores[nome] = pescador
@@ -1069,8 +1073,9 @@ class Jogo:
 
     # Descontar uma ração para cada pescador.
     for nome, pescador in self._pescadores.items():
-      if (not pescador.desconte_racao()):
+      if ((nome != _(u'Mestre')) and (not pescador.desconte_racao())):
         # Pescador sem ração deve retornar ao porto principal.
+        # Nota: O Mestre não consome rações.
         
         if (porto_principal.porto().retorne_pescador(pescador)):
           # O pescador não estava no porto principal.
@@ -1111,9 +1116,9 @@ class Jogo:
         suprimentos necessários para sua jornada.
  
         Returns:
-          nomes[(str, int), ...] - Nomes e saldos dos pescadores
+          [nome:str, ...] - Nomes dos pescadores
     """
-    nomes_saldos = []
+    nomes = []
     
     # Encontrar pescadores que estão em portos com mercado.
     for pos_porto in self._mapa.portos():
@@ -1122,10 +1127,9 @@ class Jogo:
         pescadores = porto.pescadores_em_terra()
         
         for pescador in pescadores:
-          nomes_saldos.append((pescador.nome(),
-                               pescador.consulte_saldo(), pescador.consulte_racoes()))
+          nomes.append(pescador.nome())
 
-    return nomes_saldos
+    return nomes
   
   def atenda_pescador(self, nome, pedidos):
     u""" Atende aos pedidos de compras de um pescador.
@@ -1170,45 +1174,59 @@ class Jogo:
               debug_print(_(u'Jogo::atenda_pescador() - Pedido inválido: ') + pedido[0])
           break
         
-  def bonifique_pescador(self, nome, bens):
-    u""" Bonifica pescador com bens.
-    
-        Este método pode ser utilizado ao se implementar operações para
-        o mestre do jogo, que seria capaz de bonificar ou penalizar outros jogadores.
+  def transfira_bens(self, nome_vendedor, nome_comprador, bens, contrato):
+    u""" Transfere bens entre pescadores (também usado com o Mestre).
     
         Attributes:
-          nome: str - Nome do pescador
-          bens: [(tipo_de_bem: str, detalhe, ...), ...]
+          nome_*: str - Nome do vendedor e do comprador
+          bens: [(tipo_de_bem: str, detalhe, ...), ...] - Bens a transferir, inclusive dinheiro.
+          contrato: str - Razão da transferência (doação, compra e venda, etc)
+        Returns:
+          [msg: str, ...] - Mensagens
     """
-    pescador = self._pescadores.get(nome)
+    mensagens = []
+    comprador = self._pescadores.get(nome_comprador)
+    vendedor = self._pescadores.get(nome_vendedor)
 
-    if pescador != None:
+    if comprador != None and vendedor != None:
+      mensagens.append(_(u'Transação entre %s (comprador) e %s (vendedor) relativa a \n %s') %
+                       (nome_comprador, nome_vendedor, contrato))
+
+      # Primeiro passo: Validar a transação (saldo e número de redes.
+      transferencia_valida = True
       for bem in bens:
-        if (bem[0] == _(u'barco')):
-          for pos_porto in self._mapa.portos():
-            porto = pos_porto.porto()
-            if (porto.tem_pescador(pescador) and (porto.mercado() != None)):
-              mercado = porto.mercado()
-              nome_barco = bem[2]
-              (barco_novo, preco) = mercado.fabrique_barco(bem[1], nome_barco)
-              pescador.adicione_barco(barco_novo)
-              self._barcos[nome_barco] = barco_novo
-              porto.adicione_barco(barco_novo)
-              barco_novo.defina_posicao(pos_porto)
-              break
-        elif (bem[0] == _(u'curso')):
-          if (bem[1] == _(u'navegação')):
-            pescador.aumentar_destreza_em_navegacao()
-          elif (bem[1] == _(u'pesca')):
-            pescador.aumentar_destreza_na_pesca()
-        elif (bem[0] == _(u'rações')):
-          pescador.adicione_racoes(int(bem[1]))
-        elif (bem[0] == _(u'redes')):
-          pescador.adicione_redes(int(bem[1]))
+        if (bem[0] == _(u'redes')):
+          if vendedor.redes() < int(bem[1]):
+            mensagens.append(_(u'O vendedor não tem o número de redes prometido.'))
+            transferencia_valida = False
+            break
         elif (bem[0] == _(u'dinheiro')):
-          pescador.credite(int(bem[1]))
-        else:
-          debug_print(_(u'Jogo::bonifique_pescador() - Bem inválido: ') + bem[0])
+          if comprador.consulte_saldo() < int(bem[1]):
+            mensagens.append(_(u'O comprador não tem saldo para pagar a transação.'))
+            transferencia_valida = False
+            break
+      if transferencia_valida:
+         # Agora é pra valer...
+        for bem in bens:
+          if (bem[0] == _(u'barco')):
+            barco = self._barcos[bem[2]]
+            vendedor.remova_barco(barco)
+            comprador.adicione_barco(barco)
+            mensagens.append(_(u'Barco %s de nome %s') % (barco.tipo(), barco.nome()))
+          elif (bem[0] == _(u'redes')):
+            num_redes = int(bem[1])
+            if vendedor.remova_redes(num_redes):
+              comprador.adicione_redes(num_redes)
+              mensagens.append(_(u'%d redes') % num_redes)
+              
+          elif (bem[0] == _(u'dinheiro')):
+            valor = bem[1]
+            if comprador.debite(valor):
+              vendedor.credite(valor)
+              mensagens.append(_(u'Valor: R$%d,00') % valor)
+          else:
+            debug_print(_(u'Jogo::transfira_bens() - Bem inválido: ') + bem[0])
+    return mensagens
         
   def inventario_pescador(self, nome):
     u""" Retorna bens de um pescador em formato semelhante
@@ -1290,7 +1308,9 @@ class Jogo:
     porto = barco.posicao().porto()
     if ((porto != None) and (barco.vagas() > 0)):
       for pescador in porto.pescadores_em_terra():
-        nomes_pescadores.append(pescador.nome())
+        # O Mestre não embarca.
+        if (pescador.nome() != _(u'Mestre')):
+          nomes_pescadores.append(pescador.nome())
     return nomes_pescadores
   
   def embarque(self, nome_barco, nomes_pescadores):
@@ -1330,7 +1350,7 @@ class Jogo:
           pescador_escolhido.destreza_pesca() > pescador.destreza_pesca()):
           pescador_escolhido = pescador
 
-    pescador_escolhido.remova_rede()
+    pescador_escolhido.remova_redes(1)
         
   def credite_jornadas(self):
     u""" Creditar valor de uma jornada para cada pescador em terra.
@@ -1341,9 +1361,11 @@ class Jogo:
     mensagens = []
     for pos_porto in self._mapa.portos():
       for pescador in pos_porto.porto().pescadores_em_terra():
-        pescador.credite(self._preco_jornada)
-        mensagens.append(_(u'%s recebeu R$%d,00 para trabalhar em %s.') %
-                         (pescador.nome(),self._preco_jornada, pos_porto.nome() ))
+        # O Mestre não recebe.
+        if (pescador.nome() != _(u'Mestre')):
+          pescador.credite(self._preco_jornada)
+          mensagens.append(_(u'%s recebeu R$%d,00 para trabalhar em %s.') %
+                           (pescador.nome(),self._preco_jornada, pos_porto.nome() ))
     return mensagens
   
   def prepare_jornadas(self):
@@ -1557,12 +1579,12 @@ class Jogo:
       extratos[nome] = pescador.consulte_saldo()
     return extratos
   
-  def transfira_valor(self, nome_credito, nome_debito, valor, contrato):
+  def transfira_valor(self, nome_vendedor, nome_comprador, valor, contrato):
     u""" Transfere valor em dinheiro de um pescador para outro, conforme contrato.
     
         Attributes:
-          nome_credito:str - Nome do pescador que vai receber o valor.
-          nome_debito:str - Nome do pescador a ser debitado.
+          nome_vendedor:str - Nome do pescador que vai receber o valor.
+          nome_comprador:str - Nome do pescador a ser debitado.
           valor:int - Valor a ser transferido.
           contrato:str - Razão da transferência.
           
@@ -1570,13 +1592,13 @@ class Jogo:
           [msg:str, ...] - Mensagens relativas a operações realizadas.
     """
     mensagens = []
-    if (self._pescadores[nome_debito].debite(valor) and valor > 0):
-      self._pescadores[nome_credito].credite(valor)
+    if (self._pescadores[nome_comprador].debite(valor) and valor > 0):
+      self._pescadores[nome_vendedor].credite(valor)
       mensagens.append(_(u'Pagamento de  %s a %s no valor de R$ %d,00 por:\n%s') %
-                       (nome_debito, nome_credito, valor, contrato))
+                       (nome_comprador, nome_vendedor, valor, contrato))
     else:
       mensagens.append(_(u'Contrato com %s cancelado por falta de fundos de %s.') %
-                       nome_credito, nome_debito)
+                       nome_vendedor, nome_comprador)
     return mensagens
 
 
@@ -1589,7 +1611,7 @@ if __name__ == '__main__':
   # Versão e autor 
   nome_jogo = _(u'Pescadores')
   autor_jogo = _(u'João Vianna <jvianna@gmail.com> e\n Ivan Wermelinger')
-  versao_jogo = u'0.90'
+  versao_jogo = u'0.95'
 
   raiz = tkinter.Tk()
   jogo_ativo = Jogo()
@@ -2107,68 +2129,100 @@ if __name__ == '__main__':
       
       
   class DlgTransferencias():
-    u""" Transferencias de fundos
+    u""" Compra e venda de bens
     """
-    var_pescador_debito = tkinter.StringVar()
-    var_pescador_credito = tkinter.StringVar()
+    var_comprador = tkinter.StringVar()
+    var_vendedor = tkinter.StringVar()
     var_valor = tkinter.StringVar()
+    var_redes = tkinter.StringVar()
     var_contrato = tkinter.StringVar()
-    
+
     def __init__(self, extratos):
-      self._opcoes_debito = {}
-      self._opcoes_credito = {}
+      self._redes_vendedor = 0
+      self._opcoes_comprador = {}
+      self._opcoes_vendedor = {}
       
-      self._opcoes_debito[_(u'nenhum')] = 0
-      self._opcoes_credito[_(u'nenhum')] = 0
-      
+      self._opcoes_comprador[_(u'nenhum')] = 0
+      self._opcoes_vendedor[_(u'nenhum')] = 0
+
       for (nome, saldo) in extratos.items():
-        self._opcoes_debito[_(u'%s: R$%d,00') % (nome, saldo)] = saldo
-        self._opcoes_credito[nome] = saldo
+        self._opcoes_comprador[_(u'%s: R$%d,00') % (nome, saldo)] = saldo
+        self._opcoes_vendedor[nome] = saldo
+        
+      self.var_valor.set(u'0')
+      self.var_redes.set(u'0')
+      self.var_contrato.set(u'')
 
       self._janela = tkinter.Toplevel()
-      self._janela.title(_(u'Pescadores - Transferências'))
+      self._janela.title(_(u'Pescadores - Compra e Venda'))
       
       so_digitos = (raiz.register(teste_digitos), u'%P')
 
       linhas = 0
 
       tkinter.Label(master = self._janela,
-                    text = _(u'Escolha o pescador a debitar:')).grid(column = 0,
+                    text = _(u'Comprador:')).grid(column = 0,
                                                     row = linhas, 
                                                     padx = 10, pady = 10,
                                                     sticky = tkinter.W)
 
-      linhas += 1
-
-      self._debito_option = tkinter.OptionMenu(self._janela, self.var_pescador_debito,
-                                               *self._opcoes_debito)
+      self._comprador_option = tkinter.OptionMenu(self._janela, self.var_comprador,
+                                               *self._opcoes_comprador)
       
       
-      self._debito_option.grid(column = 1, row = linhas, padx = 10, pady = 10,
+      self._comprador_option.grid(column = 1, row = linhas, padx = 10, pady = 10,
                           sticky = tkinter.E)
-      self._debito_option.focus()
-      self.var_pescador_debito.set(_(u'nenhum'))
+      self._comprador_option.focus()
+      self.var_comprador.set(_(u'nenhum'))
 
       linhas += 1
 
       tkinter.Label(master = self._janela,
-                    text = _(u'Escolha o pescador a creditar:')).grid(column = 0,
-                                                    row = linhas, 
-                                                    padx = 10, pady = 10,
-                                                    sticky = tkinter.W)
+                    text = _(u'Vendedor:')).grid(column = 0,
+                                                  row = linhas, 
+                                                  padx = 10, pady = 10,
+                                                  sticky = tkinter.W)
+
+      self._vendedor_option = tkinter.OptionMenu(self._janela, self.var_vendedor,
+                                                *self._opcoes_vendedor,
+                                                command = self.consulte_bens_vendedor)
+      
+      self._vendedor_option.grid(column = 1, row = linhas, padx = 10, pady = 10,
+                                 sticky = tkinter.E)
+      
+      self.var_vendedor.set(_(u'nenhum'))
 
       linhas += 1
 
-      self._credito_option = tkinter.OptionMenu(self._janela, self.var_pescador_credito,
-                                                *self._opcoes_credito)
-      
-      
-      self._credito_option.grid(column = 1, row = linhas, padx = 10, pady = 10,
+      tkinter.Label(master = self._janela,
+                    text = _(u'Barco:')).grid(column = 0, row = linhas, 
+                                                  padx = 10, pady = 10,
+                                                  sticky = tkinter.W)
+
+      linhas += 1
+
+      self._barcos_list = tkinter.Listbox(self._janela, selectmode = tkinter.MULTIPLE,
+                                          height = 6, width = 50)
+
+      self._barcos_list.grid(columnspan = 2, row = linhas, padx = 10, pady = 10,
                           sticky = tkinter.E)
       
-      self.var_pescador_credito.set(_(u'nenhum'))
+      linhas += 1
+
+      tkinter.Label(master = self._janela,
+                    text = _(u'Redes:')).grid(column = 0, row = linhas, 
+                                                  padx = 10, pady = 10,
+                                                  sticky = tkinter.W)
+
+      self._redes_entry = tkinter.Entry(master = self._janela, width = 2,
+                                        textvariable = self.var_redes,
+                                        validate = u'all',
+                                        validatecommand = so_digitos)
+      self._redes_entry.grid(column = 1, row = linhas, padx = 10, pady = 10,
+                          sticky = tkinter.E)
 
       linhas += 1
+
 
       tkinter.Label(master = self._janela,
                     text = _(u'Valor a transferir:')).grid(column = 0, row = linhas, 
@@ -2179,6 +2233,7 @@ if __name__ == '__main__':
                                         textvariable = self.var_valor,
                                         validate = u'all',
                                         validatecommand = so_digitos)
+
       self._valor_entry.grid(column = 1, row = linhas, padx = 10, pady = 10,
                           sticky = tkinter.E)
 
@@ -2188,18 +2243,20 @@ if __name__ == '__main__':
                     text = _(u'Contrato Realizado:')).grid(column = 0, row = linhas, 
                                                   padx = 10, pady = 10,
                                                   sticky = tkinter.W)
+
       linhas += 1
 
-      self._contrato_entry = tkinter.Entry(master = self._janela, width = 30,
-                                        textvariable = self.var_contrato)
+      self._contrato_entry = tkinter.Entry(master = self._janela, width = 50,
+                                            textvariable = self.var_contrato)
                                         
-      self._contrato_entry.grid(columnspan = 2, row = linhas, padx = 10, pady = 10,
-                          sticky = tkinter.W)
+      self._contrato_entry.grid(columnspan = 2, row = linhas,
+                                padx = 10, pady = 10,
+                                sticky = tkinter.W)
       
       linhas += 1
 
       tkinter.Button(master = self._janela, text=_(u'Ok'),
-                    command = self.transfira_valor).grid(column = 0, row = linhas,
+                    command = self.transfira_bens).grid(column = 0, row = linhas,
                                                         padx = 10, pady = 10,
                                                         sticky=tkinter.E)
 
@@ -2213,28 +2270,71 @@ if __name__ == '__main__':
       self._janela.rowconfigure(linhas, weight = 1)
       self._janela.columnconfigure(2, weight = 1)
 
-      self._janela.bind(u'<Return>', self.transfira_valor)
+      self._janela.bind(u'<Return>', self.transfira_bens)
       self._janela.bind(u'<Escape>', self._termine)
 
-    def transfira_valor(self, event = None):
+    def consulte_bens_vendedor(self, nome, event = None):
+      u""" Preenche a lista de barcos e n. de redes de acordo com vendedor.
+      """
+      bens_vendedor = jogo_ativo.inventario_pescador(self.var_vendedor.get().strip())
+      
+      # Começa com lista vazia
+      self._barcos_list.delete(0, tkinter.END)
+      self._barcos_list.insert(tkinter.END, _(u'nenhum'))
+      for bem in bens_vendedor:
+        if bem[0] == _(u'redes'):
+          self._redes_vendedor = bem[1]
+        elif bem[0] == _(u'barco'):
+          self._barcos_list.insert(tkinter.END, bem[2])
+
+    def transfira_bens(self, event = None):
       u""" Realiza a transferência sujeito a suficiência de fundos.
       """
-      opcao_debito  = self.var_pescador_debito.get().strip()
-      nome_credito = self.var_pescador_credito.get().strip()
+      opcao_comprador  = self.var_comprador.get().strip()
+
+      saldo_comprador = self._opcoes_comprador[opcao_comprador]
+
+      nome_vendedor = self.var_vendedor.get().strip()
 
       valor = int(self.var_valor.get().strip())
-      self.var_valor.set(u'0')
 
       contrato = self.var_contrato.get().strip()
-      self.var_contrato.set(u'')
-      
-      if (opcao_debito != _(u'nenhum') and nome_credito != _(u'nenhum') and valor > 0):
-        nome_debito = opcao_debito.split(u':')[0]
 
-        mensagens = jogo_ativo.transfira_valor(nome_credito, nome_debito, valor, contrato)
-        for msg in mensagens:
-          controle_jogo.jornal().adicione_mensagem(msg)
-                
+      if (opcao_comprador != _(u'nenhum') and nome_vendedor != _(u'nenhum')):
+        if (valor < saldo_comprador):
+          nome_comprador = opcao_comprador.split(u':')[0]
+
+          # Montar lista de bens
+          bens = []
+
+          num_redes = int(self.var_redes.get().strip())
+
+          if num_redes > 0:
+            if num_redes <= self._redes_vendedor:
+              bens.append((_(u'redes'), num_redes))
+            else:
+              messagebox.showwarning(_(u'Pescadores - Compra e Venda'),
+                _(u'O vendedor não tem o número de redes prometido.'))
+              # Permanece no mesmo estado.
+              return
+
+          selecionados = self._barcos_list.curselection()
+          if len(selecionados) > 0:
+            for indice in selecionados:
+              bens.append((_(u'barco'), u'', self._barcos_list.get(indice)))
+
+          if valor > 0:
+            bens.append((_(u'dinheiro'), valor))
+
+          mensagens = jogo_ativo.transfira_bens(nome_vendedor, nome_comprador, bens, contrato)
+          for msg in mensagens:
+            controle_jogo.jornal().adicione_mensagem(msg)
+        else:
+          messagebox.showwarning(_(u'Pescadores - Compra e Venda'),
+            _(u'O comprador não tem saldo para realizar a transação.'))
+          # Permanece no mesmo estado.
+          return
+
       self._termine()
 
     def _termine(self, *args):
@@ -2308,18 +2408,24 @@ if __name__ == '__main__':
 
       # Sem pausa na transição de estado
       # elif controle_jogo.estado() == u'c':
-      for (nome, saldo, racoes) in jogo_ativo.pescadores_nos_mercados():
-       
+      for nome in jogo_ativo.pescadores_nos_mercados():
+        saldo = 0
+        racoes = 0
         controle_jogo.jornal().adicione_mensagem( 
                           _(u'\n%s tem os seguintes bens:') % nome)
 
         for bem in jogo_ativo.inventario_pescador(nome):
-          if (bem[0] == _(u'rações') or bem[0] == _(u'redes')):
+          if bem[0] == _(u'rações'):
+            controle_jogo.jornal().adicione_mensagem( 
+                      u'%d %s' % (bem[1], bem[0]))
+            racoes = bem[1]
+          elif bem[0] == _(u'redes'):
             controle_jogo.jornal().adicione_mensagem( 
                       u'%d %s' % (bem[1], bem[0]))
           elif (bem[0] == _(u'dinheiro')):
             controle_jogo.jornal().adicione_mensagem( 
                       _(u'R$%d,00') % bem[1])
+            saldo = bem[1]
           elif (bem[0] == _(u'barco')):
             controle_jogo.jornal().adicione_mensagem( 
                       _(u'Um %s %s de nome %s') % (bem[0], bem[1], bem[2]))
@@ -2417,8 +2523,8 @@ if __name__ == '__main__':
 
       controle_jogo.mude_estado(u'a')
 
-  def transfira_fundos():
-    u"""Transferencias de dinheiro (empréstimos/sociedades/pagamentos)
+  def transfira_bens():
+    u"""Transferencias de bens (compras, empréstimos/sociedades/pagamentos)
     """
     extratos = jogo_ativo.extratos_pescadores()
     
@@ -2467,7 +2573,7 @@ if __name__ == '__main__':
     
     menu_jogo.add_command(label = _(u'Avançar'),
                           command = avance_tela, accelerator = u'Right Key')
-    menu_jogo.add_command(label = _(u'Transferir fundos ...'), command = transfira_fundos)
+    menu_jogo.add_command(label = _(u'Compra, Venda, Transferências ...'), command = transfira_bens)
     menu_jogo.add_command(label = _(u'Terminar'), command = termine_jogo)
 
     menu_ajuda = tkinter.Menu(menu_raiz)

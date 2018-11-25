@@ -9,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>pescadores</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/joao/Documents/src/python/pescadores_094/pescadores.py">/home/joao/Documents/src/python/pescadores_094/pescadores.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/joao/Documents/src/python/pescadores_095/pescadores.py">/home/joao/Documents/src/python/pescadores_095/pescadores.py</a></font></td></tr></table>
     <p><tt>Pescadores&nbsp;-&nbsp;<a href="#Jogo">Jogo</a>&nbsp;de&nbsp;simulação&nbsp;situado&nbsp;em&nbsp;uma&nbsp;colônia&nbsp;de&nbsp;pescadores.<br>
 &nbsp;<br>
 Copyleft&nbsp;2018&nbsp;João&nbsp;Vianna&nbsp;(jvianna@gmail.com)&nbsp;e&nbsp;Ivan&nbsp;Wermelinger<br>
@@ -17,14 +17,15 @@ Este&nbsp;produto&nbsp;é&nbsp;distribuído&nbsp;sob&nbsp;os&nbsp;termos&nbsp;de
 &nbsp;&nbsp;'Apache&nbsp;License,&nbsp;Version&nbsp;2.0'<br>
 &nbsp;<br>
 __author__&nbsp;=&nbsp;"João&nbsp;Vianna&nbsp;&lt;jvianna@gmail.com&gt;&nbsp;e&nbsp;Ivan&nbsp;Wermelinger"<br>
-__date__&nbsp;=&nbsp;"15&nbsp;Novembro&nbsp;2018"<br>
-__version__&nbsp;=&nbsp;"0.90"<br>
+__date__&nbsp;=&nbsp;"26&nbsp;Novembro&nbsp;2018"<br>
+__version__&nbsp;=&nbsp;"0.95"<br>
 &nbsp;<br>
 History:<br>
 Version&nbsp;0.50&nbsp;-&nbsp;Versão&nbsp;Inicial<br>
 Version&nbsp;0.80&nbsp;-&nbsp;Estruturas&nbsp;do&nbsp;<a href="#Jogo">Jogo</a>&nbsp;montadas<br>
 Version&nbsp;0.85&nbsp;-&nbsp;Em&nbsp;testes,&nbsp;implementado&nbsp;o&nbsp;jornal<br>
-Version&nbsp;0.90&nbsp;-&nbsp;Internacionalização&nbsp;-&nbsp;Português&nbsp;e&nbsp;Inglês</tt></p>
+Version&nbsp;0.90&nbsp;-&nbsp;Internacionalização&nbsp;-&nbsp;Português&nbsp;e&nbsp;Inglês<br>
+Version&nbsp;0.95&nbsp;-&nbsp;Transferindo&nbsp;bens</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -222,15 +223,6 @@ Notes:<br>
 Returns:<br>
 &nbsp;&nbsp;[(nome_barco:str,&nbsp;vagas:int),&nbsp;...]</tt></dd></dl>
 
-<dl><dt><a name="Jogo-bonifique_pescador"><strong>bonifique_pescador</strong></a>(self, nome, bens)</dt><dd><tt>Bonifica&nbsp;pescador&nbsp;com&nbsp;bens.<br>
-&nbsp;<br>
-Este&nbsp;método&nbsp;pode&nbsp;ser&nbsp;utilizado&nbsp;ao&nbsp;se&nbsp;implementar&nbsp;operações&nbsp;para<br>
-o&nbsp;mestre&nbsp;do&nbsp;jogo,&nbsp;que&nbsp;seria&nbsp;capaz&nbsp;de&nbsp;bonificar&nbsp;ou&nbsp;penalizar&nbsp;outros&nbsp;jogadores.<br>
-&nbsp;<br>
-Attributes:<br>
-&nbsp;&nbsp;nome:&nbsp;str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador<br>
-&nbsp;&nbsp;bens:&nbsp;[(tipo_de_bem:&nbsp;str,&nbsp;detalhe,&nbsp;...),&nbsp;...]</tt></dd></dl>
-
 <dl><dt><a name="Jogo-credite_jornadas"><strong>credite_jornadas</strong></a>(self)</dt><dd><tt>Creditar&nbsp;valor&nbsp;de&nbsp;uma&nbsp;jornada&nbsp;para&nbsp;cada&nbsp;pescador&nbsp;em&nbsp;terra.<br>
 &nbsp;<br>
 Returns:<br>
@@ -289,7 +281,7 @@ Estes&nbsp;pescadores&nbsp;poderão&nbsp;fazer&nbsp;compras&nbsp;para&nbsp;obter
 suprimentos&nbsp;necessários&nbsp;para&nbsp;sua&nbsp;jornada.<br>
 &nbsp;<br>
 Returns:<br>
-&nbsp;&nbsp;nomes[(str,&nbsp;int),&nbsp;...]&nbsp;-&nbsp;Nomes&nbsp;e&nbsp;saldos&nbsp;dos&nbsp;pescadores</tt></dd></dl>
+&nbsp;&nbsp;[nome:str,&nbsp;...]&nbsp;-&nbsp;Nomes&nbsp;dos&nbsp;pescadores</tt></dd></dl>
 
 <dl><dt><a name="Jogo-pescadores_para_barco"><strong>pescadores_para_barco</strong></a>(self, nome_barco)</dt><dd><tt>Retorna&nbsp;os&nbsp;pescadores&nbsp;que&nbsp;podem&nbsp;embarcar&nbsp;em&nbsp;um&nbsp;dado&nbsp;barco&nbsp;(no&nbsp;mesmo&nbsp;porto).<br>
 &nbsp;<br>
@@ -310,11 +302,20 @@ Returns:<br>
 &nbsp;&nbsp;[(nome_barco:str,&nbsp;[jornada:str,&nbsp;...]),&nbsp;...]&nbsp;-&nbsp;Pares&nbsp;com&nbsp;nome&nbsp;do&nbsp;barco<br>
 &nbsp;&nbsp;&nbsp;&nbsp;e&nbsp;lista&nbsp;de&nbsp;jornadas&nbsp;possíveis.</tt></dd></dl>
 
-<dl><dt><a name="Jogo-transfira_valor"><strong>transfira_valor</strong></a>(self, nome_credito, nome_debito, valor, contrato)</dt><dd><tt>Transfere&nbsp;valor&nbsp;em&nbsp;dinheiro&nbsp;de&nbsp;um&nbsp;pescador&nbsp;para&nbsp;outro,&nbsp;conforme&nbsp;contrato.<br>
+<dl><dt><a name="Jogo-transfira_bens"><strong>transfira_bens</strong></a>(self, nome_vendedor, nome_comprador, bens, contrato)</dt><dd><tt>Transfere&nbsp;bens&nbsp;entre&nbsp;pescadores&nbsp;(também&nbsp;usado&nbsp;com&nbsp;o&nbsp;Mestre).<br>
 &nbsp;<br>
 Attributes:<br>
-&nbsp;&nbsp;nome_credito:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;que&nbsp;vai&nbsp;receber&nbsp;o&nbsp;valor.<br>
-&nbsp;&nbsp;nome_debito:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;a&nbsp;ser&nbsp;debitado.<br>
+&nbsp;&nbsp;nome_*:&nbsp;str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;vendedor&nbsp;e&nbsp;do&nbsp;comprador<br>
+&nbsp;&nbsp;bens:&nbsp;[(tipo_de_bem:&nbsp;str,&nbsp;detalhe,&nbsp;...),&nbsp;...]&nbsp;-&nbsp;Bens&nbsp;a&nbsp;transferir,&nbsp;inclusive&nbsp;dinheiro.<br>
+&nbsp;&nbsp;contrato:&nbsp;str&nbsp;-&nbsp;Razão&nbsp;da&nbsp;transferência&nbsp;(doação,&nbsp;compra&nbsp;e&nbsp;venda,&nbsp;etc)<br>
+Returns:<br>
+&nbsp;&nbsp;[msg:&nbsp;str,&nbsp;...]&nbsp;-&nbsp;Mensagens</tt></dd></dl>
+
+<dl><dt><a name="Jogo-transfira_valor"><strong>transfira_valor</strong></a>(self, nome_vendedor, nome_comprador, valor, contrato)</dt><dd><tt>Transfere&nbsp;valor&nbsp;em&nbsp;dinheiro&nbsp;de&nbsp;um&nbsp;pescador&nbsp;para&nbsp;outro,&nbsp;conforme&nbsp;contrato.<br>
+&nbsp;<br>
+Attributes:<br>
+&nbsp;&nbsp;nome_vendedor:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;que&nbsp;vai&nbsp;receber&nbsp;o&nbsp;valor.<br>
+&nbsp;&nbsp;nome_comprador:str&nbsp;-&nbsp;Nome&nbsp;do&nbsp;pescador&nbsp;a&nbsp;ser&nbsp;debitado.<br>
 &nbsp;&nbsp;valor:int&nbsp;-&nbsp;Valor&nbsp;a&nbsp;ser&nbsp;transferido.<br>
 &nbsp;&nbsp;contrato:str&nbsp;-&nbsp;Razão&nbsp;da&nbsp;transferência.<br>
 &nbsp;&nbsp;<br>
@@ -595,7 +596,7 @@ Returns:<br>
 
 <dl><dt><a name="Pescador-remova_barco"><strong>remova_barco</strong></a>(self, barco)</dt><dd><tt>Remove&nbsp;barco&nbsp;do&nbsp;pescador.</tt></dd></dl>
 
-<dl><dt><a name="Pescador-remova_rede"><strong>remova_rede</strong></a>(self)</dt><dd><tt>Remove&nbsp;uma&nbsp;rede&nbsp;do&nbsp;pescador.<br>
+<dl><dt><a name="Pescador-remova_redes"><strong>remova_redes</strong></a>(self, quantas<font color="#909090">=1</font>)</dt><dd><tt>Remove&nbsp;uma&nbsp;rede&nbsp;do&nbsp;pescador.<br>
 &nbsp;<br>
 Returns:<br>
 &nbsp;&nbsp;True&nbsp;-&nbsp;Se&nbsp;havia&nbsp;rede&nbsp;para&nbsp;remover.<br>

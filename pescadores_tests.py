@@ -342,7 +342,7 @@ class TestPescador(unittest.TestCase):
     self.assertEqual(len(self.pedro.barcos()), 0)
     
     self.joao.aumentar_destreza_na_pesca()
-    self.joao.remova_rede()
+    self.joao.remova_redes(1)
     self.joao.remova_barco(self.saga)
     
     self.assertEqual(self.joao.redes(), 1)

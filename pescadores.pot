@@ -1,19 +1,19 @@
-# Mensagens para o Jogo Pescadores
-# Copyleft (C) 2018 Joao Vianna
-# Joao Vianna <jvianna@gmail.com>, 2018.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pescadores 0.90\n"
-"POT-Creation-Date: 2018-11-25 07:48+-02\n"
-"PO-Revision-Date: 2018-11-15 16:51+-02\n"
-"Last-Translator: Joao Vianna <jvianna@gmail.com>\n"
-"Language-Team: Portugues <jvianna@gmail.com>\n"
-"Language: pt\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-11-25 07:54+-02\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8 bits\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
 "Generated-By: pygettext.py 1.5\n"
+
 
 #: pescadores.py:494
 msgid "rede"
@@ -112,32 +112,23 @@ msgid "Vocês são pescadores de uma colônia de pesca em uma vila tranquila."
 msgstr ""
 
 #: pescadores.py:996
-msgid ""
-"O pescado é farto, mas nos pontos onde há mais peixes também há perigos no "
-"mar."
+msgid "O pescado é farto, mas nos pontos onde há mais peixes também há perigos no mar."
 msgstr ""
 
 #: pescadores.py:997
-msgid ""
-"Nos pontos onde a pesca é mais frequente, é preciso evitar a sobre-pesca, "
-"garantindo que os peixes se reproduzam."
+msgid "Nos pontos onde a pesca é mais frequente, é preciso evitar a sobre-pesca, garantindo que os peixes se reproduzam."
 msgstr ""
 
 #: pescadores.py:999
-msgid ""
-"O dia a dia consiste em preparar os barcos para a pesca e sair para o mar."
+msgid "O dia a dia consiste em preparar os barcos para a pesca e sair para o mar."
 msgstr ""
 
 #: pescadores.py:1000
-msgid ""
-"Para os pontos mais distantes, ou se a pesca for pouca, o barco pode ficar "
-"vários dias no mar."
+msgid "Para os pontos mais distantes, ou se a pesca for pouca, o barco pode ficar vários dias no mar."
 msgstr ""
 
 #: pescadores.py:1001
-msgid ""
-"Na volta, o peixe é vendido no mercado, e o dinheiro arrecadado pode ser "
-"usado para comprar rações, equipamentos ou fazer cursos de aprimoramento."
+msgid "Na volta, o peixe é vendido no mercado, e o dinheiro arrecadado pode ser usado para comprar rações, equipamentos ou fazer cursos de aprimoramento."
 msgstr ""
 
 #: pescadores.py:1010
@@ -153,11 +144,13 @@ msgid "Começa um novo dia na vila."
 msgstr ""
 
 #: pescadores.py:1067
-msgid "Preços no mercado de %s:\n"
+msgid ""
+"Preços no mercado de %s:\n"
 msgstr ""
 
 #: pescadores.py:1069
-msgid "%s: R$%d,00\n"
+msgid ""
+"%s: R$%d,00\n"
 msgstr ""
 
 #: pescadores.py:1082
@@ -579,7 +572,8 @@ msgid "Estado inválido: "
 msgstr ""
 
 #: pescadores.py:2537
-msgid "Uso: python pescadores.py\n"
+msgid ""
+"Uso: python pescadores.py\n"
 msgstr ""
 
 #: pescadores.py:2570
@@ -609,3 +603,4 @@ msgstr ""
 #: pescadores.py:2582
 msgid "Sobre o Jogo"
 msgstr ""
+

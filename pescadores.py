@@ -625,7 +625,6 @@ class Porto:
   
       Attributes:
         pescadores_em_terra: [Pescador, ...] - Os pescadores que estão fora dos barcos
-        barcos_em_terra: [Barco, ...] - Barcos aportados
         mercado: Mercado - Se este porto negocia bens
   """
   def __init__(self):
@@ -683,16 +682,6 @@ class Porto:
       return True
     else:
       return False
-
-  def adicione_barco(self, barco):
-    u""" Recebe um barco no porto, para atracação.
-    """
-    self._barcos_em_terra.append(barco)
-
-  def remova_barco(self, barco):
-    u""" Desatraca um barco, que sai para navegar.
-    """
-    self._barcos_em_terra.remove(barco)
 
 
 class Posicao:
@@ -1002,12 +991,15 @@ class Jogo:
     u'']
   
   def __init__(self):
-    self._mapa = Mapa()
     self._pescadores = {}
     self._barcos = {}
     self._jornadas_pendentes = []
     self._preco_jornada = 30
+    self._mapa = Mapa()
     self._mapa.preencha_mapa(_(u'mapa_parati.csv'))
+
+    self._mestre = Pescador(_(u'Mestre'))
+    self._mestre.credite(10000)            # Mestre inicia com R$10.000,00
     
   def arquivo_imagem(self):
     u""" Retorna nome do arquivo com imagem do mapa.
@@ -1039,10 +1031,7 @@ class Jogo:
     for nome in nomes:
       if (self._pescadores.get(nome) == None):
         pescador = Pescador(nome)
-        if (nome == _(u'Mestre')):
-          pescador.credite(10000)     # Mestre é um jogador especial
-        else:
-          pescador.credite(2000)      # Cada jogador começa o jogo com R$2.000,00
+        pescador.credite(2000)      # Cada jogador começa o jogo com R$2.000,00
         pescador.adicione_racoes(1)   # Para a primeira manhã
 
         self._pescadores[nome] = pescador
@@ -1073,10 +1062,8 @@ class Jogo:
 
     # Descontar uma ração para cada pescador.
     for nome, pescador in self._pescadores.items():
-      if ((nome != _(u'Mestre')) and (not pescador.desconte_racao())):
+      if (not pescador.desconte_racao()):
         # Pescador sem ração deve retornar ao porto principal.
-        # Nota: O Mestre não consome rações.
-        
         if (porto_principal.porto().retorne_pescador(pescador)):
           # O pescador não estava no porto principal.
           mensagens.append(_(u'%s ficou sem ração, e foi resgatado até o porto.') % nome)
@@ -1085,7 +1072,6 @@ class Jogo:
             if (barco.desembarque(pescador)):
               if (len(barco.pescadores()) == 0):
                 # Se o barco ficou vazio, tem que voltar ao porto tambem.
-                porto_principal.porto().adicione_barco(barco)
                 barco.defina_posicao(porto_principal)
                 mensagens.append(
                   _(u'Barco %s ficou sem tripulação, e foi rebocado até o porto.' ) %
@@ -1145,34 +1131,43 @@ class Jogo:
           os demais são detalhes, como quantidade, etc.
           Os tipos de bens incluem: barco, curso, rações, redes e dinheiro.
     """
-    pescador = self._pescadores.get(nome)
-    if pescador != None:
-      for pos_porto in self._mapa.portos():
-        porto = pos_porto.porto()
-        if (porto.tem_pescador(pescador) and (porto.mercado() != None)):
-          mercado = porto.mercado()
-          for pedido in pedidos:
-            if (pedido[0] == _(u'barco')):
-              # TODO: Tabela de barcos no mercado
-              nome_barco = pedido[2]
-              (barco_novo, preco) = mercado.fabrique_barco(pedido[1], nome_barco)
-              if mercado.venda_barco(pescador, barco_novo, preco):
-                self._barcos[nome_barco] = barco_novo
-                porto.adicione_barco(barco_novo)
-                barco_novo.defina_posicao(pos_porto)
-                
-            elif (pedido[0] == _(u'curso')):
-              if (pedido[1] == _(u'navegação')):
-                mercado.venda_curso_navegacao(pescador)
-              elif (pedido[1] == _(u'pesca')):
-                mercado.venda_curso_pesca(pescador)
-            elif (pedido[0] == _(u'rações')):
-                mercado.venda_racoes(pescador, int(pedido[1]))
-            elif (pedido[0] == _(u'redes')):
-                mercado.venda_redes(pescador, int(pedido[1]))
-            else:
-              debug_print(_(u'Jogo::atenda_pescador() - Pedido inválido: ') + pedido[0])
-          break
+    mercado = None
+    
+    if nome == _(u'Mestre'):
+      pescador = self._mestre
+      pos_porto = self._mapa.porto_principal()
+      mercado = pos_porto.porto().mercado()
+    else:
+      pescador = self._pescadores.get(nome)
+      if pescador != None:
+        for pos_porto in self._mapa.portos():
+          porto = pos_porto.porto()
+          if (porto.tem_pescador(pescador) and (porto.mercado() != None)):
+            mercado = porto.mercado()
+            break
+    
+    if mercado is not None:
+      # Encontrou mercado onde se encontra o pescador.
+      for pedido in pedidos:
+        if (pedido[0] == _(u'barco')):
+          # TODO: Tabela de barcos no mercado
+          nome_barco = pedido[2]
+          (barco_novo, preco) = mercado.fabrique_barco(pedido[1], nome_barco)
+          if mercado.venda_barco(pescador, barco_novo, preco):
+            self._barcos[nome_barco] = barco_novo
+            barco_novo.defina_posicao(pos_porto)
+            
+        elif (pedido[0] == _(u'curso')):
+          if (pedido[1] == _(u'navegação')):
+            mercado.venda_curso_navegacao(pescador)
+          elif (pedido[1] == _(u'pesca')):
+            mercado.venda_curso_pesca(pescador)
+        elif (pedido[0] == _(u'rações')):
+            mercado.venda_racoes(pescador, int(pedido[1]))
+        elif (pedido[0] == _(u'redes')):
+            mercado.venda_redes(pescador, int(pedido[1]))
+        else:
+          debug_print(_(u'Jogo::atenda_pescador() - Pedido inválido: ') + pedido[0])
         
   def transfira_bens(self, nome_vendedor, nome_comprador, bens, contrato):
     u""" Transfere bens entre pescadores (também usado com o Mestre).
@@ -1185,8 +1180,16 @@ class Jogo:
           [msg: str, ...] - Mensagens
     """
     mensagens = []
-    comprador = self._pescadores.get(nome_comprador)
-    vendedor = self._pescadores.get(nome_vendedor)
+
+    if nome_comprador == _(u'Mestre'):
+      comprador = self._mestre
+    else:
+      comprador = self._pescadores.get(nome_comprador)
+
+    if nome_vendedor == _(u'Mestre'):
+      vendedor = self._mestre
+    else:
+      vendedor = self._pescadores.get(nome_vendedor)
 
     if comprador != None and vendedor != None:
       mensagens.append(_(u'Transação entre %s (comprador) e %s (vendedor) relativa a \n %s') %
@@ -1205,6 +1208,7 @@ class Jogo:
             mensagens.append(_(u'O comprador não tem saldo para pagar a transação.'))
             transferencia_valida = False
             break
+
       if transferencia_valida:
          # Agora é pra valer...
         for bem in bens:
@@ -1236,18 +1240,23 @@ class Jogo:
           bens: [(tipo_de_bem, detalhe, ...), ...]
     """
     bens = []
-    pescador = self._pescadores[nome]
+
+    if nome == _(u'Mestre'):
+      pescador = self._mestre
+    else:
+      pescador = self._pescadores[nome]
+
+      bens.append((_(u'rações'), pescador.consulte_racoes()))
     
-    bens.append((_(u'rações'), pescador.consulte_racoes()))
-    bens.append((_(u'dinheiro'), pescador.consulte_saldo()))
-    
+      bens.append((_(u'curso'), _(u'navegação'), pescador.destreza_em_navegacao()))
+      bens.append((_(u'curso'), _(u'pesca'), pescador.destreza_na_pesca()))
+
     for barco in pescador.barcos():
       bens.append((_(u'barco'), barco.tipo(), barco.nome()))
       
     bens.append((_(u'redes'), pescador.redes()))
-    
-    bens.append((_(u'curso'), _(u'navegação'), pescador.destreza_em_navegacao()))
-    bens.append((_(u'curso'), _(u'pesca'), pescador.destreza_na_pesca()))
+
+    bens.append((_(u'dinheiro'), pescador.consulte_saldo()))
     return bens
   
   def estado_barco(self, nome_barco):
@@ -1308,9 +1317,7 @@ class Jogo:
     porto = barco.posicao().porto()
     if ((porto != None) and (barco.vagas() > 0)):
       for pescador in porto.pescadores_em_terra():
-        # O Mestre não embarca.
-        if (pescador.nome() != _(u'Mestre')):
-          nomes_pescadores.append(pescador.nome())
+        nomes_pescadores.append(pescador.nome())
     return nomes_pescadores
   
   def embarque(self, nome_barco, nomes_pescadores):
@@ -1361,11 +1368,9 @@ class Jogo:
     mensagens = []
     for pos_porto in self._mapa.portos():
       for pescador in pos_porto.porto().pescadores_em_terra():
-        # O Mestre não recebe.
-        if (pescador.nome() != _(u'Mestre')):
-          pescador.credite(self._preco_jornada)
-          mensagens.append(_(u'%s recebeu R$%d,00 para trabalhar em %s.') %
-                           (pescador.nome(),self._preco_jornada, pos_porto.nome() ))
+        pescador.credite(self._preco_jornada)
+        mensagens.append(_(u'%s recebeu R$%d,00 para trabalhar em %s.') %
+                          (pescador.nome(),self._preco_jornada, pos_porto.nome() ))
     return mensagens
   
   def prepare_jornadas(self):
@@ -1484,9 +1489,6 @@ class Jogo:
         else:
             barco_chegou = True
 
-        if posicao_atual.porto() != None:
-          posicao_atual.porto().remova_barco(barco)
-          
         barco.defina_posicao(self._mapa.ache_posicao(destino))
 
       elif (jornada == _(u'pescar')):
@@ -1561,8 +1563,6 @@ class Jogo:
             porto.retorne_pescador(pescador)
             barco.desembarque(pescador)
             
-          porto.adicione_barco(barco)
-
     msg_racoes = _(u'\nRações restantes: ')
 
     for (nome, pescador) in self._pescadores.items():
@@ -1575,31 +1575,13 @@ class Jogo:
     u""" Retorna dicionário com os saldos em dinheiro de cada pescador no jogo.
     """
     extratos = {}
+    
+    extratos[_(u'Mestre')] = self._mestre.consulte_saldo()
+
     for (nome, pescador) in self._pescadores.items():
       extratos[nome] = pescador.consulte_saldo()
     return extratos
   
-  def transfira_valor(self, nome_vendedor, nome_comprador, valor, contrato):
-    u""" Transfere valor em dinheiro de um pescador para outro, conforme contrato.
-    
-        Attributes:
-          nome_vendedor:str - Nome do pescador que vai receber o valor.
-          nome_comprador:str - Nome do pescador a ser debitado.
-          valor:int - Valor a ser transferido.
-          contrato:str - Razão da transferência.
-          
-        Returns:
-          [msg:str, ...] - Mensagens relativas a operações realizadas.
-    """
-    mensagens = []
-    if (self._pescadores[nome_comprador].debite(valor) and valor > 0):
-      self._pescadores[nome_vendedor].credite(valor)
-      mensagens.append(_(u'Pagamento de  %s a %s no valor de R$ %d,00 por:\n%s') %
-                       (nome_comprador, nome_vendedor, valor, contrato))
-    else:
-      mensagens.append(_(u'Contrato com %s cancelado por falta de fundos de %s.') %
-                       nome_vendedor, nome_comprador)
-    return mensagens
 
 
 if __name__ == '__main__':
@@ -2454,7 +2436,6 @@ if __name__ == '__main__':
       controle_jogo.jornal().adicione_mensagem(u'\n')
       
       for msg in mensagens:
-        # messagebox.showinfo(u'Pescadores - Pagamentos', msg)
         controle_jogo.jornal().adicione_mensagem(msg)
 
       controle_jogo.mude_estado(u'r')
@@ -2523,13 +2504,22 @@ if __name__ == '__main__':
 
       controle_jogo.mude_estado(u'a')
 
-  def transfira_bens():
+  def transfira_bens(event = None):
     u"""Transferencias de bens (compras, empréstimos/sociedades/pagamentos)
     """
     extratos = jogo_ativo.extratos_pescadores()
     
     dlg = DlgTransferencias(extratos)
     dlg.show()
+    
+  def atenda_mestre(event = None):
+    extratos = jogo_ativo.extratos_pescadores()
+
+    for (nome, saldo) in extratos.items():
+      if nome == _(u'Mestre'):
+        dlg = DlgMercado(nome, saldo, 0)
+        dlg.show()
+        break
     
   def termine_jogo(event = None):
     raiz.quit()
@@ -2586,6 +2576,7 @@ if __name__ == '__main__':
     controle_jogo.defina_jornal(PainelJornal())
     
     raiz.bind(u'<Right>', avance_tela)
+    raiz.bind(u'<Shift-Up>', atenda_mestre)
     
     raiz.mainloop()
     

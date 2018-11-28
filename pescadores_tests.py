@@ -416,13 +416,8 @@ class TestPorto(unittest.TestCase):
     self.assertFalse(porto.tem_pescador(self.joao))
     self.assertTrue(porto.tem_pescador(self.pedro))
     
-  def test_3_barcos_mercado(self):
+  def test_3_mercado(self):
     porto = self.parati.porto()
-    
-    porto.adicione_barco(self.saga)
-    porto.adicione_barco(self.fortuna)
-    
-    porto.remova_barco(self.saga)
     
     self.assertIsNone(porto.mercado())
     porto.crie_mercado()

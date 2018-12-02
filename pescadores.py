@@ -6,7 +6,7 @@ u""" Pescadores - Jogo de simulação situado em uma colônia de pescadores.
     Este produto é distribuído sob os termos de licenciamento da
       'Apache License, Version 2.0'
     
-    __author__ = "João Vianna <jvianna@gmail.com> e Ivan Wermelinger"
+    __author__ = "João Vianna <jvianna@gmail.com> e Ivan Wermelinger <ivannit@gmail.com>"
     __date__ = "26 Novembro 2018"
     __version__ = "0.95"
     
@@ -20,6 +20,7 @@ u""" Pescadores - Jogo de simulação situado em uma colônia de pescadores.
 from __future__ import division
 
 import string, os, sys
+import json
 
 from os import path
 from random import randint
@@ -33,14 +34,6 @@ _ = gettext.gettext
 # en.install()
 # _ = en.gettext
 
-try:
-  # This works for Python 3
-  import tkinter
-  from tkinter import messagebox
-except ImportError:
-  # For Python 2, ...
-  import Tkinter as tkinter
-  import tkMessageBox as messagebox
 
 # TODO: Fatorar e separar Jogo e subclasses em biblioteca
 # TODO: Diálogos dentro da tela principal
@@ -81,9 +74,36 @@ class Pescador:
     self._racoes = 0
     self._barcos = []
     
+  def as_dict(self):
+    u""" Retorna atributos do pescador como um string json.
+    """
+    atributos = {}
+    atributos[u'nome'] = self._nome
+    atributos[u'destreza_na_pesca'] = self._destreza_na_pesca
+    atributos[u'destreza_em_navegacao'] = self._destreza_em_navegacao
+    atributos[u'dinheiro'] = self._dinheiro
+    atributos[u'redes'] = self._redes
+    atributos[u'racoes'] = self._racoes
+    nomes_barcos = []
+    for barco in self._barcos:
+      nomes_barcos.append(barco.nome())
+    atributos[u'barcos'] = nomes_barcos
+    return atributos
+    
+  def from_dict(self, atributos):
+    u""" Reinicia atributos do pescador a partir de um string json.
+    
+        Note:
+          Lista de barcos não é copiada, pois os barcos podem
+          não ter sido instanciados.
+    """
+    for (atr, valor) in atributos.items():
+      if atr != u'barcos':
+        exec(u'self._%s = valor' % atr)
+
   def nome(self):
     return self._nome
-
+  
   def credite(self, valor):
     u""" Acrescenta um valor ao saldo do pescador.
     """
@@ -233,12 +253,43 @@ class Barco:
     self._lotacao = lot
     self._capacidade = cap
     self._resistencia = resist
-    self._pescadores = []
     self._pescado = 0
     self._atraso = 0
     self._danos = 0
     self._posicao = None
+    self._pescadores = []
     
+  def as_dict(self):
+    u""" Retorna atributos do barco como um dicionário.
+    """
+    atributos = {}
+    atributos[u'tipo'] = self._tipo
+    atributos[u'nome'] = self._nome
+    atributos[u'lotacao'] = self._lotacao
+    atributos[u'capacidade'] = self._capacidade
+    atributos[u'resistencia'] = self._resistencia
+    atributos[u'pescado'] = self._pescado
+    atributos[u'atraso'] = self._atraso
+    atributos[u'danos'] = self._danos
+    atributos[u'posicao'] = self._posicao.nome()
+
+    nomes_pescadores = []
+    for pescador in self._pescadores:
+      nomes_pescadores.append(pescador.nome())
+    atributos[u'pescadores'] = nomes_pescadores
+    return atributos
+    
+  def from_dict(self, atributos):
+    u""" Reinicia atributos do barco a partir de um dicionário.
+    
+        Note:
+          Lista de pescadores não é copiada, pois os mesmos podem
+          não ter sido instanciados.
+    """
+    for (atr, valor) in atributos.items():
+      if ((atr != u'pescadores') and (atr != u'posicao')):
+        exec(u'self._%s = valor' % atr)
+
   def nome(self):
     return self._nome
   
@@ -629,7 +680,6 @@ class Porto:
   """
   def __init__(self):
     self._pescadores_em_terra = []
-    self._barcos_em_terra = []
     self._mercado = None
     
   def crie_mercado(self):
@@ -991,15 +1041,101 @@ class Jogo:
     u'']
   
   def __init__(self):
-    self._pescadores = {}
-    self._barcos = {}
-    self._jornadas_pendentes = []
-    self._preco_jornada = 30
     self._mapa = Mapa()
-    self._mapa.preencha_mapa(_(u'mapa_parati.csv'))
+    self._nome_arq_mapa = u''
+    self._preco_jornada = 30
 
     self._mestre = Pescador(_(u'Mestre'))
     self._mestre.credite(10000)            # Mestre inicia com R$10.000,00
+    
+    self._pescadores = {}
+    self._barcos = {}
+    self._jornadas_pendentes = []
+
+  def salve_estado(self, nome_arq):
+    u""" Salva estado do jogo em arquivo, em formato json.
+    """
+    estado_jogo = {}
+    
+    estado_jogo[u'nome_arq_mapa'] = self._nome_arq_mapa
+    
+    estado_jogo[u'mestre'] = self._mestre.as_dict()
+    estado_jogo[u'preco_jornada'] = self._preco_jornada
+    
+    pescadores = []
+    for (nome_pescador, pescador) in self._pescadores.items():
+      pescadores.append(pescador.as_dict())
+      
+    estado_jogo[u'pescadores'] = pescadores
+    
+    barcos = []
+    
+    for (nome_barco, barco) in self._barcos.items():
+      barcos.append(barco.as_dict())
+      
+    estado_jogo[u'barcos'] = barcos
+    
+    portos =  {}
+    
+    for pos_porto in self._mapa.portos():
+      nomes_pescadores = []
+      for pescador in pos_porto.porto().pescadores_em_terra():
+        nomes_pescadores.append(pescador.nome())
+      portos[pos_porto.nome()] = nomes_pescadores
+    estado_jogo[u'portos'] = portos
+    
+    arq_estado = open(nome_arq, u'w')
+    arq_estado.write(json.dumps(estado_jogo))
+    arq_estado.close()
+    
+  def carregue_estado(self, nome_arq):
+    u""" Carrega o estado do jogo de um arquivo gravado no formato json.
+    """
+    arq_estado = open(nome_arq, u'r')
+    estado_jogo = json.load(arq_estado)
+    arq_estado.close()
+    
+    self._nome_arq_mapa = estado_jogo[u'nome_arq_mapa']
+
+    self.preencha_mapa(self._nome_arq_mapa)
+    
+    self._mestre.from_dict(estado_jogo[u'mestre'])
+    self._preco_jornada = estado_jogo[u'preco_jornada']
+    
+    pescadores = []
+    barcos_pescador = {}
+    
+    for dic_pescador in estado_jogo[u'pescadores']:
+      nome_pescador = dic_pescador[u'nome']
+      pescador = Pescador(nome_pescador)
+      pescador.from_dict(dic_pescador)
+      self._pescadores[nome_pescador] = pescador
+      # a alocação dos barcos é feita após instanciá-los
+      barcos_pescador[nome_pescador] = dic_pescador[u'barcos']
+      
+    for dic_barco in estado_jogo[u'barcos']:
+      nome_barco = dic_barco[u'nome']
+      # From dict vai tratar dos demais parâmetros...
+      barco = Barco(dic_barco[u'tipo'], nome_barco, 0, 0, 0)
+      barco.from_dict(dic_barco)
+      barco.defina_posicao(self._mapa.ache_posicao(dic_barco[u'posicao']))
+      self._barcos[nome_barco] = barco
+      for nome_pescador in dic_barco[u'pescadores']:
+        barco.embarque(self._pescadores[nome_pescador])
+        
+    for (nome_porto, nomes_pescadores) in estado_jogo[u'portos'].items():
+      pos_porto = self._mapa.ache_posicao(nome_porto)
+      for nome_pescador in nomes_pescadores:
+        pos_porto.porto().retorne_pescador(self._pescadores[nome_pescador])
+        
+    for (nome_pescador, nomes_barcos) in barcos_pescador.items():
+      pescador = self._pescadores[nome_pescador]
+      for nome_barco in nomes_barcos:
+        pescador.adicione_barco(self._barcos[nome_barco])
+            
+  def preencha_mapa(self, nome_arq):
+    self._nome_arq_mapa = nome_arq
+    self._mapa.preencha_mapa(nome_arq)
     
   def arquivo_imagem(self):
     u""" Retorna nome do arquivo com imagem do mapa.
@@ -1586,13 +1722,24 @@ class Jogo:
 
 if __name__ == '__main__':
 
+  try:
+    # This works for Python 3
+    import tkinter
+    from tkinter import messagebox
+    from tkinter import filedialog
+  except ImportError:
+    # For Python 2, ...
+    import Tkinter as tkinter
+    import tkMessageBox as messagebox
+    import tkFileDialog as filedialog
+
   import webbrowser
   
   debug = 0
 
   # Versão e autor 
   nome_jogo = _(u'Pescadores')
-  autor_jogo = _(u'João Vianna <jvianna@gmail.com> e\n Ivan Wermelinger')
+  autor_jogo = _(u'João Vianna <jvianna@gmail.com> e\n Ivan Wermelinger <ivannit@gmail.com>')
   versao_jogo = u'0.95'
 
   raiz = tkinter.Tk()
@@ -2520,6 +2667,13 @@ if __name__ == '__main__':
         dlg = DlgMercado(nome, saldo, 0)
         dlg.show()
         break
+      
+  def salve_estado(event = None):
+    nome_arq = filedialog.asksaveasfilename(title = _(u'Arquivo do Jogo a Salvar (.json)'),
+                                             defaultextension = u'.json',
+                                             filetypes=[(_(u'Arquivos .json'),u'*.json')])
+    
+    jogo_ativo.salve_estado(nome_arq)
     
   def termine_jogo(event = None):
     raiz.quit()
@@ -2535,15 +2689,22 @@ if __name__ == '__main__':
       for arg in argv:
         print(u' ' + arg)
 
-    if argc != 0:
+    if argc == 1:
+      nome_arq = argv[0]
+      
+      jogo_ativo.carregue_estado(nome_arq)
+      controle_jogo.mude_estado(u'a')
+    elif argc == 0:
+      jogo_ativo.preencha_mapa(_(u'mapa_parati.csv'))
+    else:
       usage()
       return
     
-    raiz.geometry(u'1280x720+20+20')
-    raiz.title(nome_jogo + u' ' + versao_jogo)
-
     (largura, altura) = jogo_ativo.dimensoes_imagem()
     
+    raiz.geometry(u'%dx%d+20+20' % (largura, altura))
+    raiz.title(nome_jogo + u' ' + versao_jogo)
+
     frame = tkinter.Frame(raiz, width = largura, height = altura)
     frame.pack()
     
@@ -2564,6 +2725,8 @@ if __name__ == '__main__':
     menu_jogo.add_command(label = _(u'Avançar'),
                           command = avance_tela, accelerator = u'Right Key')
     menu_jogo.add_command(label = _(u'Compra, Venda, Transferências ...'), command = transfira_bens)
+    menu_jogo.add_command(label = _(u'Salvar ...'), accelerator = u'Ctrl + s',
+                          command = salve_estado)
     menu_jogo.add_command(label = _(u'Terminar'), command = termine_jogo)
 
     menu_ajuda = tkinter.Menu(menu_raiz)
@@ -2577,6 +2740,7 @@ if __name__ == '__main__':
     
     raiz.bind(u'<Right>', avance_tela)
     raiz.bind(u'<Shift-Up>', atenda_mestre)
+    raiz.bind(u'<Control-s>', salve_estado)
     
     raiz.mainloop()
     
